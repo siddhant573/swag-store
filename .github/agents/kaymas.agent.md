@@ -1,6 +1,6 @@
 ---
 name: Kaymas
-description: Builds a swag-store change from a GitHub issue and proves it with kane-cli (context → design → run → verdict) before pushing; fixes failing PR checks from kane's evidence.
+description: Builds a swag-store change from a GitHub issue with kane-cli (context → design), opens the PR for kane to test, and fixes failing PR checks from kane's evidence.
 target: vscode
 tools: ['read', 'edit', 'search', 'execute', 'todo']
 ---
@@ -40,22 +40,10 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    `kane-cli context sessions save <session-id> --yes --mode agent`
    Show the designed tests, gaps and warnings, then **stop** again (**checkpoint**): run nothing until the user says go.
 5. **Implement** the change in the code.
-6. **Run the designed tests** in a real browser against the local store. Start it first with `npm run build && npm run start:kane`
-   (it serves http://127.0.0.1:4046), then run exactly the files design wrote, by path
-   (`session_save.test_files.written[]`):
-   `kane-cli testrun run <path> [<path> …] < /dev/null` (headed: the browser stays visible)
-   This folder is linked to a shared project, so `--from-context` is refused here; always pass the paths.
-   Fill any `{{variables}}` a designed test needs (the store URL http://127.0.0.1:4046, the demo creds) from
-   `.testmuai/variables` before running.
-7. **Verdict.** Read the run's result and its evidence pack. Locally the bar is: every designed test passes.
-   (The repo's policy is applied by kane on the PR, not here.)
-   Report each test's result in one line: pass/fail, the step that failed, and the expected and actual value.
-8. **Commit each designed test together with its recording:** the files in `session_save.test_files.written[]` plus their
-   `.testmuai/tests/output-<test>/` folders from the passing local run (step 6), plus your code changes. No other test files.
-   Don't use `kane-cli context pull` to fetch them.
-9. **Push only on a passing verdict.** Commit, push and open the PR. Put the verdict summary and the evidence pack
-   path in the PR description.
-   Stop the local store (the `npm run start:kane` process) before pushing, so port 4046 is free for the PR runner.
+6. **Commit and open the PR.** Commit your code changes plus the test files design wrote
+   (`session_save.test_files.written[]`) and nothing else. Don't run the tests locally: kane runs them on the PR,
+   together with every existing test your change impacts, and records the new ones there.
+   Push and open the PR. In its description, list the 2 designed tests and say kane will run them on the PR.
 
 ## Loop B: a PR check fails
 
@@ -63,11 +51,8 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    comment footer (`gh run download <run-id> -n <artifact>`), then read the failed step and its screenshot.
 2. Say the cause in one sentence before you touch the code (e.g. "the promo now discounts the gift-wrap fee because it's inside subtotal()").
 3. Fix the code. Don't change the test to make it pass.
-4. Run **that impacted test locally once**:
-   `kane-cli testrun run <the failing test's path> < /dev/null`
-   Then read the verdict.
-5. Push only when it passes. Stop the local store (the `npm run start:kane` process) first, so port 4046 is free for the PR runner.
-6. Ask kane to run the job again on the PR, so it re-runs the full impacted set on the new head:
+4. Commit and push the fix.
+5. Ask kane to run the job again on the PR, so it re-runs the new and impacted tests on the new head:
    `gh pr comment <n> --body "@kane-cli the fix is pushed, check again"`
    Then watch the checks (`gh pr checks <n> --watch`) and report kane's final comment in one line.
 
