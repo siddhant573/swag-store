@@ -1,0 +1,26 @@
+{
+  "commit_id": "0708d986-18b3-49fc-8033-43e92d51102c",
+  "test_id": "f74cb837-07a8-45b3-a752-2043361d33a3",
+  "testcase_id": "01M5XTX99BPVHPED42JJZF1CAG",
+  "project_id": "01M5XSNY69KDJVWW9T198HZ1AM",
+  "org_id": "371296",
+  "session_name": "protected-pages-require-sign-in-demo-login-resumes-order",
+  "tc_id": "TC-2113",
+  "executions": [
+    {
+      "execution_id": "14a95c48-f350-4fb5-ab7e-35789e99564f",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "uploaded": false,
+      "at": "2026-10-27T05:06:48.671Z"
+    },
+    {
+      "execution_id": "3b2e1646-e07e-4856-81c6-b348c59e2caa",
+      "run_kind": "replay",
+      "status": "passed",
+      "at": "2026-10-27T05:08:09.540Z",
+      "uploaded": true
+    }
+  ]
+}

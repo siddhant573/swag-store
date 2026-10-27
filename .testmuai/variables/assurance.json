@@ -1,0 +1,82 @@
+{
+  "start_url": {
+    "value": "http://127.0.0.1:4046",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "new_address_full_name": {
+    "value": "Riley Chen",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "new_address_street": {
+    "value": "410 Orchard Lane",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "new_address_city": {
+    "value": "Portland",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "new_address_state": {
+    "value": "OR",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "new_address_zip": {
+    "value": "97205",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "valid_future_expiry": {
+    "value": "12/30",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "valid_card_name": {
+    "value": "Jordan Lee",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "saved_address_full_name": {
+    "value": "Jordan Lee",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "saved_address_street": {
+    "value": "1200 Harbor View Rd",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "saved_address_city": {
+    "value": "Oakland",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "saved_address_state": {
+    "value": "CA",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "saved_address_zip": {
+    "value": "94607",
+    "secret": false,
+    "description": "fictional test data"
+  },
+  "CVV": {
+    "value": "123",
+    "secret": false,
+    "description": "security code for the test card (fictional test data)"
+  },
+  "first_size": {
+    "value": "",
+    "secret": true,
+    "description": "kane-cli couldn't tell if this is a secret, so it's marked as one; set \"secret\": false if it isn't"
+  },
+  "second_size": {
+    "value": "",
+    "secret": true,
+    "description": "kane-cli couldn't tell if this is a secret, so it's marked as one; set \"secret\": false if it isn't"
+  }
+}
