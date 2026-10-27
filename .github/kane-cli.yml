@@ -13,7 +13,7 @@ auto_continue: true
 # false: --no-adaptive-heal, so a PR gate reports what it saw instead of re-authoring.
 heal: false
 # How many tests run at once on the runner (one Chrome each).
-parallel: 1
+parallel: 2
 impact:
   # true lets the model judge the word-match candidates (spends credits).
   judge: true
