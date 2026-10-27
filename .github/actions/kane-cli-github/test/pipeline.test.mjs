@@ -123,7 +123,7 @@ test("auto_continue true: impact then run in one turn; the final comment comes a
   assert.match(body, /<summary>🧪 <b>Tests<\/b> — 2 ran · 1 failed<\/summary>/);
   assert.ok(body.includes("| ❌ | **Apply gift wrap at checkout** | step 6: discount −$10.00, expected −$9.00 |"));
   assert.ok(body.includes("| ✅ | **Open cart from home banner** | passed in 41 s |"));
-  assert.ok(body.includes("| ⚠️ | **Not in this folder** | no file in this PR, so it didn't run |"));
+  assert.doesNotMatch(body, /Not in this folder/, "a fileless match is never a row");
   assert.ok(body.includes("- **🎯 Apply a promo code to a cart** — 🟥 1 of 1 failing\n  - Apply gift wrap at checkout"));
   assert.ok(body.includes("(https://evidence.lambdatest.com/?pack=gh-artifact:siddhant573/kane-pr-chat-test/4242)"));
   assert.doesNotMatch(body, /\(0\.\d\d\)/, "no scores anywhere");
@@ -140,7 +140,7 @@ test("auto_continue false: impact lists impacted and new and asks; `run them` ru
   assert.match(body, /Reply `@kane-cli run them` to run them\./);
   assert.ok(body.includes("- **🎯 Apply a promo code to a cart** — 1 test\n  - Apply gift wrap at checkout"), body);
   let { state } = readState(w.github.comments);
-  assert.deepEqual(state.impacted.map((t) => [t.test, t.new]), [["t-4", false], ["t-19", true], ["t-9", null]]);
+  assert.deepEqual(state.impacted.map((t) => [t.test, t.new]), [["t-4", false], ["t-19", true]], "a fileless match (t-9) is not kept");
   assert.equal(state.impacted[1].why, "pricing.js now adds the wrap fee inside subtotal(), which this test totals");
   assert.equal(w.github.check("kane-cli / tests"), undefined, "no tests check when nothing will run");
 
@@ -673,4 +673,37 @@ test("another kane-cli run that doesn't finish in time: a clear failure, nothing
   assert.equal(argvOf(w.fake, ["testrun", "run"]).length, 0);
   assert.match(kaneComments(w.github).at(-1).body, /Another kane-cli run on this machine \(pid 4242\) didn't finish within/);
   assert.equal(w.github.check("kane-cli / tests").conclusion, "failure");
+});
+
+// --- fileless matches (tests from earlier takes, still in the project, with no file here) -------
+
+test("a fileless match is left out of the table, the counts, the badges and the run, with one note in Why", async () => {
+  const w = world();
+  await job(w, human("@kane-cli check this"));
+  const [args] = argvOf(w.fake, ["testrun", "run"]);
+  assert.deepEqual(args.filter((a) => a.endsWith("_test.md")), [CART, GIFT]);
+  const body = kaneComments(w.github).at(-1).body;
+  assert.doesNotMatch(body, /Not in this folder|no file in this PR|t-9/);
+  assert.match(body, /badge\/impacted-1-0969da.*badge\/new%20in%20PR-1-6e7781/);
+  assert.match(body, /<summary>🧪 <b>Tests<\/b> — 2 ran · 1 failed<\/summary>/);
+  const why = body.slice(body.indexOf("🔎 <b>Why these tests</b>"), body.indexOf("### 🧾 Evidence"));
+  assert.match(why, /the change touches 2 requirements/, "the fileless test's requirement isn't counted");
+  assert.match(why, /<sub>1 more matched test isn't in this repository, so it wasn't run\.<\/sub>\n<\/details>/);
+  const { state } = readState(w.github.comments);
+  assert.deepEqual(state.impacted.map((t) => t.test), ["t-4", "t-19"], "nor in state");
+});
+
+test("with no fileless matches the note is absent; impact-only answers drop them too", async () => {
+  const lines = readFileSync(join(FIXTURES, "impact.ndjson"), "utf8").split("\n");
+  const r = JSON.parse(lines[0]);
+  r.tests = r.tests.filter((t) => t.path);
+  const w = world({ kane: { extra: { "impact.ndjson": [JSON.stringify(r), lines[1], ""].join("\n") } } });
+  await job(w, human("@kane-cli check this"));
+  assert.doesNotMatch(kaneComments(w.github).at(-1).body, /aren't in this repository|isn't in this repository/);
+
+  const a = world({ cfg: config({ auto: false }) });
+  await job(a, human("@kane-cli check this"));
+  const body = kaneComments(a.github).at(-1).body;
+  assert.doesNotMatch(body, /Not in this folder/);
+  assert.match(body, /<sub>1 more matched test isn't in this repository, so it wasn't run\.<\/sub>/);
 });

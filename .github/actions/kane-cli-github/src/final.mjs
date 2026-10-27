@@ -114,7 +114,13 @@ const fileList = (files) => {
   return files.length > MAX_FILES ? `${shown.join(", ")} +${files.length - MAX_FILES} more` : shown.join(", ");
 };
 
-export function whySection({ rows, results, ran, files = [], defaultBranch = "main" }) {
+/** The one muted line for matches with no file in this repository; null when there are none. */
+export function filelessNote(n) {
+  if (!n) return null;
+  return n === 1 ? "<sub>1 more matched test isn't in this repository, so it wasn't run.</sub>" : `<sub>${n} more matched tests aren't in this repository, so they weren't run.</sub>`;
+}
+
+export function whySection({ rows, results, ran, files = [], fileless = 0, defaultBranch = "main" }) {
   const t = tally(rows, results);
   const { groups, other } = requirementGroups(rows);
   const k = groups.length;
@@ -134,6 +140,8 @@ export function whySection({ rows, results, ran, files = [], defaultBranch = "ma
   if (m === 0) lines.push(`All ${n} test${n === 1 ? "" : "s"} already exist${n === 1 ? "s" : ""} on ${branch}, so ${n === 1 ? "it counts" : "they count"} as impacted (none are new in this PR).`);
   else if (n === 0) lines.push(`All ${m} test${m === 1 ? " is" : "s are"} new in this PR (none exist on ${branch} yet).`);
   else lines.push(`${n} test${n === 1 ? "" : "s"} already exist${n === 1 ? "s" : ""} on ${branch}, so ${n === 1 ? "it counts" : "they count"} as impacted; ${m} ${m === 1 ? "is" : "are"} new in this PR.`);
+  const note = filelessNote(fileless);
+  if (note) lines.push(``, note);
   lines.push(`</details>`);
   return lines.join("\n");
 }
@@ -238,7 +246,7 @@ export function renderRunReport(d) {
   if (d.runError) parts.push(`⚠️ kane-cli: ${cell(d.runError)}`);
   if (d.ran) parts.push(testsSection(rows, d.results));
   if (rows.length) parts.push(whySection(d));
-  else parts.push(d.empty ?? "The engine named no tests for this change.");
+  else parts.push([d.empty ?? "The engine named no tests for this change.", filelessNote(d.fileless)].filter(Boolean).join("\n\n"));
   if (!d.ran) {
     if (rows.some((r) => r.path)) parts.push(`Reply \`${mention} run them\` to run them.`);
     return parts.join("\n\n");

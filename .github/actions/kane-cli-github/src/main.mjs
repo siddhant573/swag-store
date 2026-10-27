@@ -326,7 +326,7 @@ async function answerComment(ctx, target) {
           ...identity, phase: "done", reply: afterReply, lastAction: decision.action, picture: out.picture, impacted: out.impacted, results: out.results,
           rows: out.rows, policy: out.policy, verdict: out.verdict ?? null, runError: out.runError ?? null,
           evidencePath: out.evidencePath, logsPath: out.logsPath, checkId: out.checkId, headTested: out.headTested,
-          files: out.files, durationS: out.durationS, policyDoc: out.policyDoc, defaultBranch: pull.base?.repo?.default_branch ?? null,
+          files: out.files, fileless: out.fileless ?? 0, durationS: out.durationS, policyDoc: out.policyDoc, defaultBranch: pull.base?.repo?.default_branch ?? null,
         });
         ctx.pipeline.output("evidence-path", out.evidencePath ?? "");
         ctx.pipeline.output("logs-path", out.logsPath ?? "");
@@ -558,7 +558,7 @@ export async function report(env, deps) {
   const runUrl = env.GITHUB_RUN_ID ? `${env.GITHUB_SERVER_URL || "https://github.com"}/${repo}/actions/runs/${env.GITHUB_RUN_ID}` : repo ? `https://github.com/${repo}/actions` : null;
   const md = renderRunReport({
     rows: pend.rows, results: pend.results, ran: true, mention: pend.mention, evidence, policy: pend.policy, verdict: pend.verdict,
-    policyDoc: pend.policyDoc, runError: pend.runError, files: pend.files ?? [], sha: pend.headTested ?? pend.head,
+    policyDoc: pend.policyDoc, runError: pend.runError, files: pend.files ?? [], fileless: pend.fileless ?? 0, sha: pend.headTested ?? pend.head,
     durationS: pend.durationS, runUrl, repo, defaultBranch: pend.defaultBranch || "main", runId: env.GITHUB_RUN_ID || null,
   });
   const members = new Map((pend.results ?? []).map((r) => [r.test, { status: r.verdict }]));

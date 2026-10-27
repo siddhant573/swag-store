@@ -25,7 +25,8 @@ test("reset-take.sh closes open feat/* PRs (except --keep) with their branches, 
   assert.match(out, /closed #3 \(feat\/gift-wrap\) and deleted its branch/);
   assert.match(out, /kept #6 \(feat\/keep-me\)/);
   assert.doesNotMatch(out, /#5/);
-  assert.match(out, /TODO: archive/);
+  assert.match(out, /Tests designed in this take stay in the project; later PRs don't show them \(no file in the repo\)\./);
+  assert.doesNotMatch(out, /TODO/);
 });
 
 test("reset-take.sh without a repo prints its usage and exits 2", () => {

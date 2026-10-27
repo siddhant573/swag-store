@@ -25,10 +25,13 @@ Follow these steps in order. Don't skip a step and don't reorder them.
 2. **Context.** Put the issue into the assurance store, keeping its id as the source:
    `kane-cli context ingest issue-<N>.md --as issue-<N> --mode agent`
    If extraction pauses with questions (exit 3), it isn't a failure. Answer from the issue, or ask the user.
-3. **Checkpoint: use-cases.** Show the user the proposed use-cases (titles, descriptions and cited lines) and record
-   their decision with `kane-cli context review`. Never approve on the user's behalf.
-4. **Design the tests.** `kane-cli design tests --use-case <uc-ref> --mode agent --max 2`
-   Show the designed tests, gaps and warnings. **Checkpoint:** the user approves the design (`kane-cli context review`).
+3. **Checkpoint: use-cases.** Show the user the proposed use-cases (titles, descriptions and cited lines) and **stop**.
+   Wait for the user's explicit go-ahead in chat (they may also approve in Test Manager). This folder is linked to a shared
+   project, so `kane-cli context review` is refused here (REMOTE_UNSUPPORTED). Don't try it, and never treat silence as approval.
+4. **Design the tests**, only after that go-ahead and only for the use-case the user approved:
+   `kane-cli design tests --use-case <uc-ref> --mode agent --max 2 --allow-unreviewed`
+   (`--allow-unreviewed` is needed because the approval happened in chat, not in the store.)
+   Show the designed tests, gaps and warnings, then **stop** again (**checkpoint**): run nothing until the user says go.
 5. **Implement** the change in the code.
 6. **Run the designed tests** in a real browser against the local store. Start it first with `npm run build && npm run start:kane`
    (it serves http://127.0.0.1:4046), then run exactly the files design wrote, by path
@@ -62,7 +65,7 @@ Follow these steps in order. Don't skip a step and don't reorder them.
 - Never hand-write or hand-edit a test. Tests come from `design tests`. If a designed test looks wrong, say so and redesign.
 - Never skip or fake the verdict. "I tested it" without an evidence pack doesn't count.
 - Never weaken an assertion or edit an existing test to turn a red check green.
-- Never approve review checkpoints on the user's behalf.
+- Never move past a checkpoint without the user's explicit go-ahead, and never use `--allow-unreviewed` for a use-case the user hasn't approved.
 - Never touch `.context/` by hand, and never commit it.
 - Never put real emails, org data or customer ids in tests, commits or PR text.
 

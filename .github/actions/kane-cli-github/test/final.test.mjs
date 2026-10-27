@@ -136,3 +136,10 @@ test("a non-run answer keeps the header, You asked and @asker + reply, without b
 test("badge labels and values are URL-encoded, with shields' dashes and underscores doubled", () => {
   assert.equal(badge("new in PR", "a-b_c", "6e7781", "x"), "![x](https://img.shields.io/badge/new%20in%20PR-a--b__c-6e7781?style=for-the-badge)");
 });
+
+test("the fileless note: plural, singular, and absent at zero", () => {
+  const md = (fileless) => renderRunReport({ ...base, results: FAILING, policy: { configured: false }, fileless });
+  assert.ok(md(3).includes("<sub>3 more matched tests aren't in this repository, so they weren't run.</sub>\n</details>"));
+  assert.ok(md(1).includes("<sub>1 more matched test isn't in this repository, so it wasn't run.</sub>"));
+  assert.doesNotMatch(md(0), /in this repository/);
+});

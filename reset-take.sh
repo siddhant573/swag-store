@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Resets the demo repo between takes: closes every open PR whose branch starts with feat/
-# (except the --keep numbers) and deletes those branches.
+# (except the --keep numbers) and deletes those branches. Tests designed in a take stay in the
+# linked project (linked folders can't archive them); later PRs leave them out (no file in the repo).
 # usage: ./reset-take.sh <owner/repo> [--keep N] [--keep M]
 set -euo pipefail
 
@@ -29,4 +30,4 @@ while IFS=$'\t' read -r number branch; do
   closed=$((closed + 1))
 done < <(printf '%s' "$prs" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{for(const p of JSON.parse(s||"[]"))console.log(`${p.number}\t${p.headRefName}`)})')
 echo "done: $closed PR(s) closed in $repo"
-echo "TODO: archive the take's tests in the linked project (waiting on linked-folder context review); nothing archived"
+echo "Tests designed in this take stay in the project; later PRs don't show them (no file in the repo)."

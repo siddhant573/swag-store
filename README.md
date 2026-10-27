@@ -56,7 +56,9 @@ test must pass and assert something; a healed test is a warning). PR checks run 
 reports what it saw.
 
 Between demo takes, `./reset-take.sh <owner/repo> [--keep N]` closes the open `feat/*` pull requests and
-deletes their branches.
+deletes their branches. Tests designed in a take stay in the linked project (a linked folder can't archive them); a later
+PR's impact may still match them, but with no file in the repo they never run, count or show as rows: the
+"Why these tests" section ends with one muted line saying how many were left out.
 
 ## Agents
 

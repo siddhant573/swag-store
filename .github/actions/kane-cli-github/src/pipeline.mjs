@@ -209,7 +209,8 @@ export async function pipelineTurn(ctx, t) {
   const { decision, prev, head, config } = t;
   const sameHead = prev.head_sha === head;
   const tests = decision.args?.tests ?? "impacted";
-  const savedImpacted = sameHead ? prev.impacted ?? [] : [];
+  // a match with no file here (a test an earlier take designed, which a linked folder can't archive) never runs or counts
+  const savedImpacted = sameHead ? (prev.impacted ?? []).filter((r) => r.path) : [];
   const doImpact = decision.action !== "run" || (tests === "impacted" && !savedImpacted.some((r) => r.path));
   // auto_continue runs straight on only for someone who may run (decide already gates run requests)
   const wantsRun = decision.action !== "impact" || (config.autoContinue && t.mayRun !== false);
@@ -232,12 +233,16 @@ export async function pipelineTurn(ctx, t) {
     let impacted = savedImpacted;
     let rows;
     let files = t.files ?? [];
+    let fileless = 0;
     if (doImpact) {
       await t.progress(["Checking which tests this PR affects…"], { force: true });
       // the checkout's own diff: the API refuses big ones (406), and an empty diff would read as "nothing ran"
       const diff = await prDiff(p.cwd, t.pull.base?.sha);
       files = filesOf(diff);
-      impacted = await runImpact({ kane: p.kane, cwd: p.cwd, baseSha: t.pull.base?.sha, diff, judge: config.impact.judge, tmp: p.stateDir });
+      const matched = await runImpact({ kane: p.kane, cwd: p.cwd, baseSha: t.pull.base?.sha, diff, judge: config.impact.judge, tmp: p.stateDir });
+      // fileless matches are only counted, in one note under "Why these tests": never rows, badges or runs
+      impacted = matched.filter((r) => r.path);
+      fileless = matched.length - impacted.length;
       rows = impacted;
     } else if (tests === "impacted") {
       rows = savedImpacted;
@@ -258,10 +263,10 @@ export async function pipelineTurn(ctx, t) {
 
     if (!wantsRun) {
       const results = sameHead ? prev.results : null;
-      return { ...base, deferred: false, results, picture: `for ${sha7(head)} · ${headline({ impacted: rows })}`, report: renderRunReport({ rows, ran: false, files, mention: ctx.mention, defaultBranch: t.defaultBranch }) };
+      return { ...base, deferred: false, results, picture: `for ${sha7(head)} · ${headline({ impacted: rows })}`, report: renderRunReport({ rows, ran: false, files, fileless, mention: ctx.mention, defaultBranch: t.defaultBranch }) };
     }
     if (selection.length === 0) {
-      const summary = renderRunReport({ rows, ran: false, files, mention: ctx.mention, defaultBranch: t.defaultBranch, empty: "The engine named no tests for this change, so nothing ran." });
+      const summary = renderRunReport({ rows, ran: false, files, fileless, mention: ctx.mention, defaultBranch: t.defaultBranch, empty: "The engine named no tests for this change, so nothing ran." });
       await ctx.github.updateCheckRun(checkId, { status: "completed", conclusion: "neutral", output: { title: `${headline({ impacted: rows })} · nothing ran`, summary } });
       clearPending(p);
       return { ...base, deferred: false, results: [], picture: `for ${sha7(head)} · ${headline({ impacted: rows, results: [] })}`, report: summary };
@@ -304,6 +309,7 @@ export async function pipelineTurn(ctx, t) {
       evidencePath: run.evidencePath,
       logsPath,
       files,
+      fileless,
       durationS: typeof run.summary?.duration_s === "number" ? run.summary.duration_s : null,
       policyDoc: policyDocOf(policy, run.verdict),
     };
