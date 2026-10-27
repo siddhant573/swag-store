@@ -64,9 +64,10 @@ Follow these steps in order. Don't skip a step and don't reorder them.
 4. Run **that impacted test locally once**:
    `kane-cli testrun run <the failing test's path> < /dev/null`
    Then read the verdict.
-5. Push only when it passes. Let the PR re-run the full impacted set.
-
-   Stop the local store (the `npm run start:kane` process) before pushing, so port 4046 is free for the PR runner.
+5. Push only when it passes. Stop the local store (the `npm run start:kane` process) first, so port 4046 is free for the PR runner.
+6. Ask kane to run the job again on the PR, so it re-runs the full impacted set on the new head:
+   `gh pr comment <n> --body "@kane-cli the fix is pushed, check again"`
+   Then watch the checks (`gh pr checks <n> --watch`) and report kane's final comment in one line.
 
 ## Never
 
