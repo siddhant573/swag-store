@@ -10,7 +10,7 @@ export const MAX_FILES = 4;
 export const MAX_POLICY_YAML = 6000;
 
 const FAILING = new Set(["failed", "broken", "interrupted"]);
-const C = { blue: "0969da", gray: "6e7781", red: "cf222e", green: "1a7f37" };
+const C = { blue: "0969da", gray: "6e7781", red: "cf222e", green: "1a7f37", orange: "bc4c00" };
 
 /** shields.io path part: dashes and underscores doubled, the rest URL-encoded. */
 const shield = (s) => encodeURIComponent(String(s).replace(/-/g, "--").replace(/_/g, "__"));
@@ -39,6 +39,7 @@ export function tally(rows, results) {
     ran: ran.length,
     failed: ran.filter((r) => FAILING.has(r.verdict)).length,
     passed: ran.filter((r) => r.verdict === "passed").length,
+    healed: ran.filter((r) => r.healed === true).length,
   };
 }
 
@@ -61,6 +62,7 @@ export function badges({ rows, results, ran, policy, verdict, policyDoc }) {
   const out = [badge("impacted", t.impacted, C.blue, `${t.impacted} impacted`), badge("new in PR", t.added, C.gray, `${t.added} new`)];
   if (ran) {
     out.push(t.failed > 0 ? badge("failing", t.failed, C.red, `${t.failed} failing`) : badge("passing", t.passed, C.green, `${t.passed} passing`));
+    if (t.healed > 0) out.push(badge("healed", t.healed, C.orange, `${t.healed} healed`));
     if (hasVerdict(policy, verdict, policyDoc)) out.push(policyBadge(verdict));
   }
   return out.join(" ");
@@ -70,8 +72,9 @@ export function badges({ rows, results, ran, policy, verdict, policyDoc }) {
 function testRow(r, res) {
   if (!r.path) return ["⚠️", "no file in this PR, so it didn't run"];
   if (!res || res.verdict === "not_run") return ["⚠️", "not run"];
-  if (res.verdict === "passed") return ["✅", res.duration_s != null ? `passed in ${duration(res.duration_s)}` : "passed"];
-  return ["❌", res.note || res.verdict];
+  const heal = res.healed ? " · 🩹 healed: kane re-recorded a step that no longer matched the page" : "";
+  if (res.verdict === "passed") return ["✅", (res.duration_s != null ? `passed in ${duration(res.duration_s)}` : "passed") + heal];
+  return ["❌", (res.note || res.verdict) + (res.healed ? " · 🩹 heal tried, still failing" : "")];
 }
 
 export function testsSection(rows, results) {

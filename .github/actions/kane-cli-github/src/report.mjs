@@ -6,7 +6,7 @@ import { failureText, policyNote } from "./testrun.mjs";
 export function resultOf(row, member) {
   if (!member) return { test: row.test, verdict: "not_run", note: "no result came back", path: row.path, duration_s: null };
   const dur = member.duration_s != null ? `${Math.round(member.duration_s)} s` : null;
-  return { test: row.test, verdict: member.status, note: failureText(member) ?? dur ?? member.status, path: row.path, duration_s: member.duration_s };
+  return { test: row.test, verdict: member.status, note: failureText(member) ?? dur ?? member.status, path: row.path, duration_s: member.duration_s, healed: member.healed === true };
 }
 
 /** The policy line: missing file, not available yet, the verdict, or null when none is configured. */

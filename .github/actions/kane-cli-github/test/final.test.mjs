@@ -143,3 +143,16 @@ test("the fileless note: plural, singular, and absent at zero", () => {
   assert.ok(md(1).includes("<sub>1 more matched test isn't in this repository, so it wasn't run.</sub>"));
   assert.doesNotMatch(md(0), /in this repository/);
 });
+
+test("a healed test shows a healed badge and says so on its row", async () => {
+  const { badges, testsSection } = await import("../src/final.mjs");
+  const rows = [{ test: "t-1", path: "a_test.md", new: false }, { test: "t-2", path: "b_test.md", new: false }];
+  const results = [{ test: "t-1", verdict: "passed", duration_s: 60, healed: true }, { test: "t-2", verdict: "failed", note: "step 6: discount", healed: true }];
+  const b = badges({ rows, results, ran: true });
+  assert.match(b, /healed-2-bc4c00/);
+  const s = testsSection(rows, results);
+  assert.match(s, /passed in .*🩹 healed/);
+  assert.match(s, /heal tried, still failing/);
+  const none = badges({ rows, results: results.map((r) => ({ ...r, healed: false })), ran: true });
+  assert.doesNotMatch(none, /healed/);
+});

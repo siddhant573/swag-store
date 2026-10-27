@@ -72,6 +72,8 @@ export async function runTestrun({ kane, cwd, args, outFile, onMember }) {
     const reason = await failureReason(m.log_path);
     if (reason) m.failure = { ...m.failure, message: reason };
   }
+  // a heal re-authored part of the test on this run: the comment says so next to its result
+  for (const m of members.values()) m.healed = await healedFrom(m.log_path);
   const last = (type) => events.findLast((e) => e.type === type) ?? null;
   const done = last("testrun_done");
   const coverage = last("coverage");
@@ -79,6 +81,27 @@ export async function runTestrun({ kane, cwd, args, outFile, onMember }) {
   const evidencePath = candidates.find((p) => typeof p === "string" && p && existsSync(p)) ?? null;
   const error = errorOf(events) ?? (done ? null : `kane-cli stopped (exit ${code}) before the run finished`);
   return { code, members, summary: last("testrun_summary"), done, verdict: last("verdict"), error, evidencePath };
+}
+
+/** True when a member's own log says adaptive heal ran (`test_md_adaptive_heal`, or the summary's adaptive_heal.triggered). */
+export async function healedFrom(logPath) {
+  if (!logPath) return false;
+  let text;
+  try {
+    if ((await stat(logPath)).size > 32 * 1024 * 1024) return false;
+    text = await readFile(logPath, "utf8");
+  } catch {
+    return false;
+  }
+  for (const l of text.split("\n")) {
+    if (!l.includes("adaptive_heal")) continue;
+    try {
+      const e = JSON.parse(l);
+      if (e.type === "test_md_adaptive_heal") return true;
+      if (e.type === "test_md_summary" && e.adaptive_heal?.triggered === true) return true;
+    } catch {}
+  }
+  return false;
 }
 
 /** A runner reason that names no value: "assertion_failed: @ step 7", "step_failed", "". */

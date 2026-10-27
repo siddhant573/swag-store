@@ -149,3 +149,22 @@ test("a generic 'assertion_failed: @ step 7' member message is replaced by the l
   const kept = await runTestrun({ kane: kaneRunner({ cmd: splitCommand(KANE_CMD), env: { ...process.env, FAKE_KANE_DIR: kaneScenario() } }), cwd: prCheckout().dir, args: testrunArgs({ paths: PATHS, heal: false }) });
   assert.equal(kept.members.get(PATHS[1]).failure.message, "discount −$10.00, expected −$9.00");
 });
+
+test("healedFrom: a member log with adaptive heal says healed; one without does not", async () => {
+  const { healedFrom } = await import("../src/testrun.mjs");
+  const { mkdtemp, writeFile } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = await mkdtemp(join(tmpdir(), "heal-"));
+  const healed = join(dir, "a.ndjson");
+  await writeFile(healed, [JSON.stringify({ type: "test_md_adaptive_heal", shrink_count: 1 }), JSON.stringify({ type: "test_md_summary", adaptive_heal: { triggered: true } })].join("\n"));
+  const summaryOnly = join(dir, "b.ndjson");
+  await writeFile(summaryOnly, JSON.stringify({ type: "test_md_summary", adaptive_heal: { triggered: true } }));
+  const plain = join(dir, "c.ndjson");
+  await writeFile(plain, JSON.stringify({ type: "test_md_summary", adaptive_heal: { triggered: false } }));
+  assert.equal(await healedFrom(healed), true);
+  assert.equal(await healedFrom(summaryOnly), true);
+  assert.equal(await healedFrom(plain), false);
+  assert.equal(await healedFrom(join(dir, "missing.ndjson")), false);
+  assert.equal(await healedFrom(null), false);
+});
