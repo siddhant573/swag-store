@@ -252,8 +252,10 @@ export function renderRunReport(d) {
   const parts = [badges(d)];
   if (d.runError) parts.push(`⚠️ kane-cli: ${cell(d.runError)}`);
   if (d.ran) parts.push(testsSection(rows, d.results));
-  if (rows.length) parts.push(whySection(d));
-  else parts.push([d.empty ?? "The engine named no tests for this change.", filelessNote(d.fileless)].filter(Boolean).join("\n\n"));
+  // a rerun of named or failed tests carries no requirements: no Why section saying "0 requirements"
+  const hasRequirements = rows.some((r) => (r.use_cases ?? []).length);
+  if (hasRequirements) parts.push(whySection(d));
+  else if (!rows.length) parts.push([d.empty ?? "The engine named no tests for this change.", filelessNote(d.fileless)].filter(Boolean).join("\n\n"));
   if (!d.ran) {
     if (rows.some((r) => r.path)) parts.push(`Reply \`${mention} run them\` to run them.`);
     return parts.join("\n\n");
