@@ -24,4 +24,4 @@ app:
   start: npm ci --no-audit --no-fund && npm run build && npm run start:kane
   url: http://127.0.0.1:4046
   ready_path: /
-  timeout_seconds: 180
+  timeout_seconds: 480
