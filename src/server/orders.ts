@@ -11,6 +11,7 @@ export type Order = {
   deliveredAt?: string;
   items: CartItem[];
   promo?: string;
+  giftWrap?: boolean;
   shipTo: Address;
   status: OrderStatus;
   charged: number; // what checkout charged

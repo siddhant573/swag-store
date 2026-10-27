@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
-import { discount, isValidPromo, shipping, subtotal, total } from "@/cart/pricing";
+import { discount, GIFT_WRAP_FEE, isValidPromo, shipping, subtotal, total } from "@/cart/pricing";
 import type { UiVersion } from "@/ui/version";
 import { AddressForm } from "@/components/AddressForm";
 import { useAddresses } from "@/components/useAddresses";
@@ -14,7 +14,7 @@ import { validateCard, DECLINED_CARD } from "@/data/card";
 const money = (n: number) => `$${n.toFixed(2)}`;
 
 export function CheckoutClient({ ui }: { ui: UiVersion }) {
-  const { ready, items, clear } = useCart();
+  const { ready, items, clear, giftWrap } = useCart();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState<string | undefined>();
@@ -42,7 +42,7 @@ export function CheckoutClient({ ui }: { ui: UiVersion }) {
   const sub = subtotal(items);
   const off = discount(sub, applied);
   const ship = shipping(sub);
-  const tot = total(items, applied);
+  const tot = total(items, applied, giftWrap);
 
   const applyPromo = () => {
     const c = code.trim().toUpperCase();
@@ -78,7 +78,7 @@ export function CheckoutClient({ ui }: { ui: UiVersion }) {
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ items: items.map((i) => ({ id: i.id, qty: i.qty })), promo: applied, shipTo: selected }),
+      body: JSON.stringify({ items: items.map((i) => ({ id: i.id, qty: i.qty })), promo: applied, giftWrap, shipTo: selected }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -203,6 +203,10 @@ export function CheckoutClient({ ui }: { ui: UiVersion }) {
         ))}
         <hr />
         <div className="row"><span>Subtotal</span><span data-testid="checkout-subtotal">{money(sub)}</span></div>
+        <div className="row" data-testid="checkout-gift-wrap">
+          <span>Gift wrap{giftWrap ? "" : " (not selected)"}</span>
+          <span>{money(giftWrap ? GIFT_WRAP_FEE : 0)}</span>
+        </div>
         <div className="row"><span>Discount</span><span data-testid="checkout-discount">−{money(off)}</span></div>
         <div className="row"><span>Shipping</span><span data-testid="checkout-shipping">{money(ship)}</span></div>
         <hr />

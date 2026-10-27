@@ -52,6 +52,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
       <aside className="card summary">
         <h2>Summary</h2>
         <div className="row"><span>Subtotal</span><span data-testid="confirmation-subtotal">{money(s.subtotal)}</span></div>
+        {s.giftWrap > 0 ? <div className="row" data-testid="confirmation-gift-wrap"><span>Gift wrap</span><span>{money(s.giftWrap)}</span></div> : null}
         <div className="row"><span>Discount{order.promo ? ` (${order.promo})` : ""}</span><span data-testid="confirmation-discount">−{money(s.discount)}</span></div>
         <div className="row"><span>Shipping</span><span data-testid="confirmation-shipping">{money(s.shipping)}</span></div>
         <hr />

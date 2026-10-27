@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
 import { ProductArt } from "@/components/ProductArt";
-import { FREE_SHIPPING_FROM, subtotal } from "@/cart/pricing";
+import { FREE_SHIPPING_FROM, GIFT_WRAP_FEE, subtotal } from "@/cart/pricing";
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
 export default function CartPage() {
-  const { ready, items, setQty, remove } = useCart();
+  const { ready, items, setQty, remove, giftWrap, setGiftWrap } = useCart();
   if (!ready) return <p className="muted">Loading your cart…</p>;
   if (items.length === 0)
     return (
@@ -17,8 +17,9 @@ export default function CartPage() {
         <Link href="/shop" className="btn primary">Start shopping</Link>
       </div>
     );
-  const sub = subtotal(items);
-  const toFree = Math.max(0, FREE_SHIPPING_FROM - sub);
+  const merchandiseSubtotal = subtotal(items);
+  const sub = subtotal(items, giftWrap);
+  const toFree = Math.max(0, FREE_SHIPPING_FROM - merchandiseSubtotal);
   return (
     <>
       <h1>Your cart</h1>
@@ -38,9 +39,18 @@ export default function CartPage() {
           ))}
         </section>
         <aside className="card summary">
+          <label className="check" data-testid="gift-wrap-option">
+            <input
+              type="checkbox"
+              checked={giftWrap}
+              onChange={(e) => setGiftWrap(e.target.checked)}
+              data-testid="gift-wrap-checkbox"
+            />
+            Gift wrap (+${GIFT_WRAP_FEE})
+          </label>
           <div className="ship-progress small" data-testid="free-shipping">
             <span data-testid="free-shipping-message">{toFree > 0 ? <>You&apos;re <b data-testid="free-shipping-remaining">{money(toFree)}</b> away from free shipping.</> : <>You&apos;ve unlocked <b>free shipping</b>.</>}</span>
-            <div className="bar"><span style={{ width: `${Math.min(100, (sub / FREE_SHIPPING_FROM) * 100)}%` }} /></div>
+            <div className="bar"><span style={{ width: `${Math.min(100, (merchandiseSubtotal / FREE_SHIPPING_FROM) * 100)}%` }} /></div>
           </div>
           <div className="row total-row"><span>Subtotal</span><span data-testid="cart-subtotal">{money(sub)}</span></div>
           <p className="muted small">Promo codes and shipping are applied at checkout.</p>

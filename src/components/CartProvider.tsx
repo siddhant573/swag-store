@@ -9,6 +9,8 @@ type Cart = {
   ready: boolean;
   items: CartItem[];
   count: number;
+  giftWrap: boolean;
+  setGiftWrap: (enabled: boolean) => void;
   add: (key: string, qty?: number) => void;
   setQty: (key: string, qty: number) => void;
   remove: (key: string) => void;
@@ -18,7 +20,8 @@ type Cart = {
 const Ctx = createContext<Cart | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [lines, setLines, ready] = useStored<Line[]>("swag_cart", []);
+  const [lines, setLines, cartReady] = useStored<Line[]>("swag_cart", []);
+  const [giftWrap, setGiftWrap, giftWrapReady] = useStored("swag_gift_wrap", true);
 
   // CartItem.id is the line key, so two sizes of one tee are two lines.
   const items: CartItem[] = lines.filter((l) => typeof l?.key === "string").flatMap((l) => {
@@ -27,9 +30,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   });
 
   const value: Cart = {
-    ready,
+    ready: cartReady && giftWrapReady,
     items,
     count: items.reduce((n, i) => n + i.qty, 0),
+    giftWrap,
+    setGiftWrap,
     add: (key, qty = 1) =>
       setLines((ls) => (ls.some((l) => l.key === key) ? ls.map((l) => (l.key === key ? { ...l, qty: Math.min(99, l.qty + qty) } : l)) : [...ls, { key, qty }])),
     setQty: (key, qty) =>
