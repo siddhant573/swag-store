@@ -48,6 +48,7 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    Don't use `kane-cli context pull` to fetch them.
 9. **Push only on a passing verdict.** Commit, push and open the PR. Put the verdict summary and the evidence pack
    path in the PR description.
+   Stop the local store (the `npm run start:kane` process) before pushing, so port 4046 is free for the PR runner.
 
 ## Loop B: a PR check fails
 
@@ -59,6 +60,8 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    `kane-cli testrun run <the failing test's path> < /dev/null`
    Then read the verdict.
 5. Push only when it passes. Let the PR re-run the full impacted set.
+
+   Stop the local store (the `npm run start:kane` process) before pushing, so port 4046 is free for the PR runner.
 
 ## Never
 
