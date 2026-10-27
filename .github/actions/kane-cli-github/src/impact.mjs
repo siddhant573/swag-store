@@ -47,6 +47,12 @@ export function whyOf(t, result = null) {
     .join("; ");
 }
 
+/** The judge's own sentence for a test (v2 `reason`, v1 `judged_reason`), never a word-match score; else null. */
+export function judgeReason(t) {
+  const r = typeof t?.reason === "string" ? t.reason : typeof t?.judged_reason === "string" ? t.judged_reason : "";
+  return r.trim() || null;
+}
+
 /**
  * True when `path` (relative to the repo root) is in `sha` of the repo at `cwd`. Read with
  * `git ls-tree`, so "not there" (empty output) and a git failure (a PipelineError) differ.
@@ -113,7 +119,7 @@ export async function runImpact({ kane, cwd, baseSha, diff, judge = true, tmp, b
     t.use_case && typeof t.use_case === "object"
       ? [{ id: String(t.use_case.id), title: t.use_case.title ?? ucTitle.get(String(t.use_case.id).toLowerCase()) ?? null }]
       : (t.use_cases ?? []).map((id) => ({ id: String(id), title: ucTitle.get(String(id).toLowerCase()) ?? null }));
-  const rows = result.tests.map((t) => ({ test: String(t.id), title: t.title ?? null, why: whyOf(t, result), path: t.path ?? null, use_cases: useCasesOf(t) }));
+  const rows = result.tests.map((t) => ({ test: String(t.id), title: t.title ?? null, why: whyOf(t, result), reason: judgeReason(t), path: t.path ?? null, use_cases: useCasesOf(t) }));
   return splitByBase(rows, { cwd, baseSha });
 }
 

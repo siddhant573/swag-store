@@ -129,7 +129,11 @@ export function whySection({ rows, results, ran, files = [], fileless = 0, defau
   const k = groups.length;
   const lines = [`<details>`, `<summary>🔎 <b>Why these tests</b> — the change touches ${k} requirement${k === 1 ? "" : "s"}</summary>`, `<br>`, ``];
   lines.push(`${files.length ? `This PR changes ${fileList(files)}. ` : ""}kane matched that change to the requirements each test verifies:`, ``);
-  const item = (r) => `  - ${cell(nameOf(r))}${r.path ? "" : " *(no file in this PR)*"}`;
+  const reasonOf = (r) => {
+    const s = String(r.reason ?? "").replace(/\s+/g, " ").trim();
+    return s ? ` — <i>${cell(s.length > 220 ? s.slice(0, 219) + "…" : s)}</i>` : "";
+  };
+  const item = (r) => `  - ${cell(nameOf(r))}${r.path ? "" : " *(no file in this PR)*"}${reasonOf(r)}`;
   for (const g of groups) {
     const f = g.tests.filter((r) => FAILING.has(t.byTest.get(r.test)?.verdict)).length;
     const status = ran ? ` — ${squares(g.tests, t.byTest)} ${f} of ${g.tests.length} failing` : ` — ${g.tests.length} test${g.tests.length === 1 ? "" : "s"}`;

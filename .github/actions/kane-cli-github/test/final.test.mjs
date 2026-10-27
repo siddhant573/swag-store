@@ -156,3 +156,14 @@ test("a healed test shows a healed badge and says so on its row", async () => {
   const none = badges({ rows, results: results.map((r) => ({ ...r, healed: false })), ran: true });
   assert.doesNotMatch(none, /healed/);
 });
+
+test("Why these tests shows the judge's reason under a test, and nothing for a test without one", async () => {
+  const { whySection } = await import("../src/final.mjs");
+  const rows = [
+    { test: "t-1", title: "Checkout at $50", path: "a_test.md", new: false, use_cases: [{ id: "uc-3", title: "Place an order" }], reason: "At $50 with a $10 promo, shipping becomes $5 instead of $0." },
+    { test: "t-2", title: "Below threshold", path: "b_test.md", new: false, use_cases: [{ id: "uc-3", title: "Place an order" }] },
+  ];
+  const s = whySection({ rows, results: [], ran: false, files: [] });
+  assert.match(s, /Checkout at \$50.* — <i>At \$50 with a \$10 promo, shipping becomes \$5 instead of \$0\.<\/i>/);
+  assert.doesNotMatch(s, /Below threshold.*<i>/);
+});
