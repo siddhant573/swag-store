@@ -24,13 +24,18 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    Don't paraphrase or add to it. `issue-<N>.md` is gitignored and is never committed.
 2. **Context.** Put the issue into the assurance store, keeping its id as the source:
    `kane-cli context ingest issue-<N>.md --as issue-<N> --mode agent`
-   If extraction pauses with questions (exit 3), it isn't a failure. Answer from the issue, or ask the user.
+   If extraction pauses with questions (exit 3), it isn't a failure. Show the user each question with its options and
+   your pick: where the issue and `prd.md` disagree, pick the option that follows `prd.md` (the recommended one); then answer.
+   When extraction finishes, save its session so the use-cases reach the project (design refuses an unsaved use-case):
+   `kane-cli context sessions save <session-id> --yes --mode agent`
 3. **Checkpoint: use-cases.** Show the user the proposed use-cases (titles, descriptions and cited lines) and **stop**.
    Wait for the user's explicit go-ahead in chat (they may also approve in Test Manager). This folder is linked to a shared
    project, so `kane-cli context review` is refused here (REMOTE_UNSUPPORTED). Don't try it, and never treat silence as approval.
 4. **Design the tests**, only after that go-ahead and only for the use-case the user approved:
    `kane-cli design tests --use-case <uc-ref> --mode agent --max 2 --allow-unreviewed`
    (`--allow-unreviewed` is needed because the approval happened in chat, not in the store.)
+   Then save the design session; this writes the test files and creates their Test Manager cases:
+   `kane-cli context sessions save <session-id> --yes --mode agent`
    Show the designed tests, gaps and warnings, then **stop** again (**checkpoint**): run nothing until the user says go.
 5. **Implement** the change in the code.
 6. **Run the designed tests** in a real browser against the local store. Start it first with `npm run build && npm run start:kane`
