@@ -36,7 +36,8 @@ export function breakdown(items: CartItem[], code?: string): Breakdown {
   const off = discount(running, code);
   running -= off;
 
-  const ship = shipping(running);
+  // Free shipping is checked against the merchandise subtotal before any discount (PRD).
+  const ship = shipping(sub);
   running += ship;
 
   return { subtotal: sub, discount: off, shipping: ship, total: cents(running) };
