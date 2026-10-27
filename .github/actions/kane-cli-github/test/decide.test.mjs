@@ -30,12 +30,20 @@ test("an unknown policy becomes a clarifying question", () => {
   assert.equal(decide(answer("run", { policy: "x" }), { ...opts, policies: [] }).reply, "There's no x policy here. Available: none.");
 });
 
-test("a test name kane hasn't seen on this PR is refused", () => {
+test("a run naming a test kane hasn't seen runs the impacted set instead", () => {
   const d = decide(answer("run", { tests: ["promo applies", "gift wrap total"] }), opts);
+  assert.equal(d.action, "impact_then_run");
+  assert.equal(d.args.tests, "impacted");
+  assert.equal(d.refused, undefined);
+  assert.match(d.reply, /doesn't know gift wrap total on this PR yet/);
+  assert.equal(decide(answer("impact_then_run", { tests: ["x"] }), { ...opts, state: null }).action, "impact_then_run");
+});
+
+test("an answer naming a test kane hasn't seen is refused", () => {
+  const d = decide(answer("answer", { tests: ["gift wrap total"] }), opts);
   assert.equal(d.action, "answer");
   assert.equal(d.reply, "kane doesn't know a test named gift wrap total on this PR yet.");
   assert.equal(d.refused, d.reply);
-  assert.equal(decide(answer("run", { tests: ["x"] }), { ...opts, state: null }).action, "answer");
 });
 
 test("an allowed answer passes through, reply capped at 600", () => {

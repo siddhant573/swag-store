@@ -353,7 +353,7 @@ test("a bot-written state with junk fields doesn't break the turn", async () => 
   const junk = { v: 1, head_sha: SHA, turns: [null, { who: "OWNER", said: "hi" }], impacted: "lots", results: { a: 1 }, last_action: 5, pending_question: 7 };
   const prior = { id: 50, user: BOT, body: `x\n${MARKER}\n${writeState(junk)}`, created_at: "2026-10-26T09:00:00Z" };
   const c = human("@kane-cli run promo applies", { minute: 5 });
-  const { github, requests, deps } = setup({ comments: [prior, c], answer: { understood: "run", reply: "I would run it.", action: "run", args: { tests: ["promo applies"], policy: null } } });
+  const { github, requests, deps } = setup({ comments: [prior, c], answer: { understood: "run", reply: "I would run it.", action: "answer", args: { tests: ["promo applies"], policy: null } } });
   await run(issueEvent(c), ENV, deps);
   assert.deepEqual(requests[0].request.state.impacted, []);
   assert.match(kaneComments(github).at(-1).body, /kane doesn't know a test named promo applies on this PR yet\./);

@@ -39,6 +39,11 @@ export function decide(answer, { may = [], policies = [], state = null, dryRun =
   if (Array.isArray(tests)) {
     const known = new Set([...(state?.impacted ?? []), ...(state?.results ?? [])].map((t) => t.test).concat(extra).map((n) => String(n).toLowerCase()));
     const unknown = tests.find((t) => !known.has(String(t).toLowerCase()));
+    // a run that names a test kane hasn't seen yet (a new test before the first impact check) runs the impacted set,
+    // which takes in every test new in this PR; any other action that names one is refused
+    if (unknown !== undefined && (action === "run" || action === "impact_then_run")) {
+      return { action: "impact_then_run", args: { tests: "impacted", policy }, reply: `kane doesn't know ${unknown} on this PR yet, so it checks which tests this PR affects and runs them, new tests included.` };
+    }
     if (unknown !== undefined) return refuse("answer", `kane doesn't know a test named ${unknown} on this PR yet.`);
   }
   // Cut by code points, so an emoji or other astral character is never split in half.
