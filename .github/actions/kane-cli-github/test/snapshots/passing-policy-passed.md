@@ -11,7 +11,7 @@
 <summary>🧪 <b>Tests</b> — 4 ran · 0 failed</summary>
 <br>
 
-| | Test | What went wrong |
+| | Test | Result |
 |:---:|---|---|
 | ✅ | **Apply UNIVERSE20 without changing free shipping** | passed in 41 s |
 | ✅ | **Apply UNIVERSE20 without changing paid shipping** | passed in 41 s |

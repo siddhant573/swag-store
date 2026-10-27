@@ -79,7 +79,7 @@ function testRow(r, res) {
 
 export function testsSection(rows, results) {
   const t = tally(rows, results);
-  const lines = [`<details>`, `<summary>🧪 <b>Tests</b> — ${t.ran} ran · ${t.failed} failed</summary>`, `<br>`, ``, `| | Test | What went wrong |`, `|:---:|---|---|`];
+  const lines = [`<details>`, `<summary>🧪 <b>Tests</b> — ${t.ran} ran · ${t.failed} failed</summary>`, `<br>`, ``, `| | Test | ${t.failed > 0 ? "What went wrong" : "Result"} |`, `|:---:|---|---|`];
   for (const r of rows) {
     const [icon, text] = testRow(r, t.byTest.get(r.test));
     lines.push(`| ${icon} | **${cell(nameOf(r))}** | ${cell(text)} |`);
