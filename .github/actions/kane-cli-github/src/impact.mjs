@@ -9,7 +9,8 @@ import { PipelineError, errorOf } from "./kane.mjs";
 /** The impact_result event, or a PipelineError carrying kane-cli's own error message. */
 export function parseImpact(events) {
   const result = events.find((e) => e.type === "impact_result");
-  if (result) return { ...result, tests: Array.isArray(result.tests) ? result.tests : [] };
+  // contract v2 lists the tests to run under `run`; v1 under `tests`
+  if (result) return { ...result, tests: Array.isArray(result.run) ? result.run : Array.isArray(result.tests) ? result.tests : [] };
   const err = errorOf(events);
   throw new PipelineError(err ? `kane couldn't check impact: ${err}` : "kane couldn't check impact: kane-cli gave no impact_result.");
 }
@@ -21,6 +22,7 @@ export function parseImpact(events) {
  * nothing names it. Repeats keep their best score; best first.
  */
 export function whyOf(t, result = null) {
+  if (typeof t.reason === "string" && t.reason.trim()) return t.reason.trim();
   if (typeof t.judged_reason === "string" && t.judged_reason.trim()) return t.judged_reason.trim();
   const titles = new Map();
   for (const u of result?.use_cases ?? []) if (u?.id && u.title) titles.set(String(u.id).toLowerCase(), u.title);
@@ -94,15 +96,23 @@ export async function splitByBase(rows, { cwd, baseSha }) {
 }
 
 /** Runs impact in the PR checkout `cwd` and returns [{test, title, why, path, new}] in the engine's order. */
-export async function runImpact({ kane, cwd, baseSha, diff, judge = false, tmp }) {
+/**
+ * `baseUrl` (optional) points only this impact call at another controller (TESTMUAI_BASE_URL),
+ * e.g. one that serves the impact@1 template; runs and evidence keep the env's own controller.
+ */
+export async function runImpact({ kane, cwd, baseSha, diff, judge = true, tmp, baseUrl = null }) {
   const dir = tmp ?? mkdtempSync(join(tmpdir(), "kane-impact-"));
   const input = join(dir, `pr-${Date.now()}.diff`);
   writeFileSync(input, String(diff ?? ""));
-  const { events } = await kane.exec(["context", "impact", "--input", input, "--mode", "agent", ...(judge ? [] : ["--no-judge"])], { cwd });
+  // v2 always judges and refuses --no-judge; it's passed only when the config turns the judge off
+  const { events } = await kane.exec(["context", "impact", "--input", input, "--mode", "agent", ...(judge === false ? ["--no-judge"] : [])], { cwd, ...(baseUrl ? { env: { TESTMUAI_BASE_URL: baseUrl } } : {}) });
   const result = parseImpact(events);
   const ucTitle = new Map((result.use_cases ?? []).map((u) => [String(u.id).toLowerCase(), u.title ?? null]));
   // the requirements each test verifies, by title (the final comment groups tests under them)
-  const useCasesOf = (t) => (t.use_cases ?? []).map((id) => ({ id: String(id), title: ucTitle.get(String(id).toLowerCase()) ?? null }));
+  const useCasesOf = (t) =>
+    t.use_case && typeof t.use_case === "object"
+      ? [{ id: String(t.use_case.id), title: t.use_case.title ?? ucTitle.get(String(t.use_case.id).toLowerCase()) ?? null }]
+      : (t.use_cases ?? []).map((id) => ({ id: String(id), title: ucTitle.get(String(id).toLowerCase()) ?? null }));
   const rows = result.tests.map((t) => ({ test: String(t.id), title: t.title ?? null, why: whyOf(t, result), path: t.path ?? null, use_cases: useCasesOf(t) }));
   return splitByBase(rows, { cwd, baseSha });
 }

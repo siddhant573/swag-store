@@ -37,6 +37,10 @@ inputs:
     description: "The kane-cli command prefix, split like a shell would (quotes, backslashes) but never run through one, e.g. `kane-cli` or `/path/tsx /path/kane-cli/src/index.tsx`."
     required: false
     default: "kane-cli"
+  impact-base-url:
+    description: "Optional controller URL for the impact step only (TESTMUAI_BASE_URL), e.g. one serving the impact@1 template."
+    required: false
+    default: ""
   kane-env:
     description: "The TestMu environment kane-cli signs in to: prod or stage (login --env)."
     required: false
@@ -81,6 +85,7 @@ runs:
         KANE_PIPELINE: ${{ inputs.pipeline }}
         KANE_CLI_CMD: ${{ inputs.kane-cli }}
         KANE_ENV: ${{ inputs.kane-env }}
+        KANE_IMPACT_BASE_URL: ${{ inputs.impact-base-url }}
         KANE_PR_PATH: ${{ inputs.pr-path }}
         KANE_ARTIFACT_ID: ${{ inputs.artifact-id }}
         KANE_STATE_DIR: ${{ runner.temp }}/kane-cli-github

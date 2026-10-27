@@ -13,7 +13,7 @@ test("no file gives the defaults", () => {
     policy: null,
     heal: false,
     parallel: 1,
-    impact: { judge: false },
+    impact: { judge: true },
     app: null,
   });
   assert.deepEqual(parseConfig(""), parseConfig(null));
@@ -31,7 +31,7 @@ test("a full file is read", () => {
     policy: null,
     heal: false,
     parallel: 1,
-    impact: { judge: false },
+    impact: { judge: true },
     app: null,
   });
 });

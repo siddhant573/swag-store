@@ -57,6 +57,7 @@ jobs:
           converse-url: ${{ vars.KANE_CONVERSE_URL }}
           kane-cli: ${{ vars.KANE_CLI_CMD || 'kane-cli' }}
           kane-env: ${{ vars.KANE_ENV || 'prod' }}
+          impact-base-url: ${{ vars.KANE_IMPACT_BASE_URL }}
           pr-path: pr
       # The pack goes up before the result is posted, so the result can link to it.
       - name: Upload the evidence pack

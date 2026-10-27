@@ -193,8 +193,8 @@ test("progress: the working comment is edited per member, at most once per 5 s",
   assert.equal(memberEdits.length, 1, "throttled: one member edit inside 5 s");
 });
 
-test("heal: the default adds --no-adaptive-heal; heal: true omits it; impact.judge true drops --no-judge", async () => {
-  const off = world();
+test("heal: the default adds --no-adaptive-heal; heal: true omits it; impact.judge false adds --no-judge, true drops it", async () => {
+  const off = world({ cfg: config({ judge: false }) });
   await job(off, human("@kane-cli check this"));
   assert.ok(argvOf(off.fake, ["testrun", "run"])[0].includes("--no-adaptive-heal"));
   assert.ok(argvOf(off.fake, ["context", "impact"])[0].includes("--no-judge"));

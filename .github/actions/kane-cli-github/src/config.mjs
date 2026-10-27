@@ -66,7 +66,7 @@ export function parseConfig(yamlText) {
 
   const impact = doc.impact ?? {};
   if (!isMap(impact)) throw new ConfigError("impact must be a map, like impact: { judge: false }.");
-  const judge = impact.judge ?? false;
+  const judge = impact.judge ?? true;
   if (typeof judge !== "boolean") throw new ConfigError("impact.judge must be true or false.");
 
   return {

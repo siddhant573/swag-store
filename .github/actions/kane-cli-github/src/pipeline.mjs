@@ -239,7 +239,7 @@ export async function pipelineTurn(ctx, t) {
       // the checkout's own diff: the API refuses big ones (406), and an empty diff would read as "nothing ran"
       const diff = await prDiff(p.cwd, t.pull.base?.sha);
       files = filesOf(diff);
-      const matched = await runImpact({ kane: p.kane, cwd: p.cwd, baseSha: t.pull.base?.sha, diff, judge: config.impact.judge, tmp: p.stateDir });
+      const matched = await runImpact({ kane: p.kane, cwd: p.cwd, baseSha: t.pull.base?.sha, diff, judge: config.impact.judge, tmp: p.stateDir, baseUrl: process.env.KANE_IMPACT_BASE_URL || null });
       // fileless matches are only counted, in one note under "Why these tests": never rows, badges or runs
       impacted = matched.filter((r) => r.path);
       fileless = matched.length - impacted.length;

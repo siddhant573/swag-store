@@ -106,3 +106,12 @@ test("an unnamed criterion falls back to its test's use case title, and an id st
   assert.equal(whyOf({ id: "t-1", use_cases: ["uc-1"], reasons: [{ via: "similar", matched: "ac-9", score: 0.2 }, { via: "similar", matched: "ac-9", score: 0.17 }] }, result), "similar to “Cart” (0.20)");
   assert.equal(whyOf({ id: "t-1", use_cases: [], reasons: [{ via: "similar", matched: "sc-3", score: 0.2 }] }, result), "similar to sc-3 (0.20)");
 });
+
+test("contract v2: tests come from run[], the reason is t.reason, the use case is one object, and the base url reaches only impact", async () => {
+  const { parseImpact, whyOf } = await import("../src/impact.mjs");
+  const v2 = { type: "impact_result", v: 2, run: [{ id: "t-1", title: "Checkout", path: null, reason: "the diff moves shipping onto the discounted amount", confidence: "high", test_case: "TC-1", use_case: { id: "uc-3", title: "Place an order" } }], not_affected: [] };
+  const r = parseImpact([v2]);
+  assert.equal(r.tests.length, 1);
+  assert.equal(whyOf(r.tests[0], r), "the diff moves shipping onto the discounted amount");
+  assert.equal(parseImpact([{ type: "impact_result", tests: [{ id: "t-2" }] }]).tests.length, 1, "v1 still reads");
+});

@@ -30,11 +30,11 @@ function parseLine(line) {
 export function kaneRunner({ cmd, env = process.env, spawnImpl = spawn }) {
   return {
     cmd,
-    exec(args, { cwd = process.cwd(), onEvent, outFile } = {}) {
+    exec(args, { cwd = process.cwd(), onEvent, outFile, env: extra = null } = {}) {
       return new Promise((resolve, reject) => {
         let child;
         try {
-          child = spawnImpl(cmd[0], [...cmd.slice(1), ...args], { cwd, env, stdio: ["ignore", "pipe", "pipe"] });
+          child = spawnImpl(cmd[0], [...cmd.slice(1), ...args], { cwd, env: extra ? { ...env, ...extra } : env, stdio: ["ignore", "pipe", "pipe"] });
         } catch (e) {
           reject(new PipelineError(`kane-cli couldn't start (${e.code ?? e.message})`));
           return;
