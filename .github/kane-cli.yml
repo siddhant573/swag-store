@@ -1,0 +1,27 @@
+version: 1
+access:
+  ask: [OWNER, MEMBER, COLLABORATOR]
+  run: [OWNER, MEMBER, COLLABORATOR]
+# Named policies a request can pick ("go ahead with the checkout policy").
+policies:
+  checkout: .github/kane/checkout-policy.yaml
+# The policy every run is judged against (read from the default branch). Applied only when the
+# installed kane-cli has `testrun run --policy`; otherwise the comment says "policy: not available yet".
+policy: .github/kane/checkout-policy.yaml
+# true: a check runs the impacted tests straight after impact. false: kane lists them and asks.
+auto_continue: true
+# false: --no-adaptive-heal, so a PR gate reports what it saw instead of re-authoring.
+heal: false
+# How many tests run at once on the runner (one Chrome each).
+parallel: 1
+impact:
+  # true lets the model judge the word-match candidates (spends credits).
+  judge: true
+# The PR's own build, served from the PR checkout while its tests run; tests get --override-start-url.
+app:
+  # 4046, not 3000 (4045 is a browser-blocked port; another service on the runner Mac takes 3000, and
+  # the booth's dev server uses 3100). The PR's Next.js app is installed and built first, so allow 180 s.
+  start: npm ci --no-audit --no-fund && npm run build && npm run start:kane
+  url: http://127.0.0.1:4046
+  ready_path: /
+  timeout_seconds: 180

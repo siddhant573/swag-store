@@ -1,0 +1,24 @@
+# Quality gates for checkout PRs, judged by kane-cli against the run's sealed
+# evidence pack (`kane-cli testrun run --policy .github/kane/checkout-policy.yaml`).
+policy: checkout-pr
+gates:
+  - id: no-broken-tests
+    metric: totals.broken
+    equals: 0
+    severity: blocking
+    message: Every checkout test must pass.
+  - id: full-pass-rate
+    metric: pass_rate
+    min: 1
+    severity: blocking
+    message: The pass rate must be 100%.
+  - id: every-test-checks
+    metric: metrics.tests_without_checks
+    equals: 0
+    severity: blocking
+    message: Every test must assert something.
+  - id: no-healed-tests
+    metric: metrics.heal.healed_tests
+    max: 0
+    severity: warning
+    message: A healed test means the UI moved under a recorded step; review the heal.

@@ -1,0 +1,25 @@
+{
+  "name": "universe-swag-store",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "dev:v2": "UI_VERSION=v2 next dev -p 3100",
+    "build": "next build",
+    "start": "next start -p 3100",
+    "start:kane": "next start -H 127.0.0.1 -p 4046",
+    "build:v2": "UI_VERSION=v2 next build",
+    "start:kane:v2": "UI_VERSION=v2 next start -H 127.0.0.1 -p 4046"
+  },
+  "dependencies": {
+    "next": "15.3.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.1",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "typescript": "5.8.3"
+  }
+}

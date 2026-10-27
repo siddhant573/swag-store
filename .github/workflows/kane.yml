@@ -1,0 +1,87 @@
+# kane-cli on pull requests: the conversation, then impact → run → evidence → policy → checks.
+# Runs on the owner's Mac (self-hosted, label kane-demo). The runner's own HOME is a runner-only
+# dir (its .env), not the owner's. Within a job the action gives kane-cli HOME=$RUNNER_TEMP/kane-home
+# (its saved login; removed by an always-step) and the PR's app a separate HOME=$RUNNER_TEMP/app-home
+# with no tokens, keys or runner files in its env. The PR's code still runs as the runner user:
+# see the README's trust model. Fork-PR workflows must stay disabled for this repo.
+# Repo variables: KANE_CONVERSE_URL, KANE_CLI_CMD (the kane-cli source build's command, e.g.
+# "/…/pr-runner/kane-cli/node_modules/.bin/tsx /…/pr-runner/kane-cli/src/index.tsx"), and
+# optionally KANE_ENV (prod | stage). Secrets: LT_USERNAME, LT_ACCESS_KEY.
+name: kane-cli
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: write
+jobs:
+  kane:
+    # Bot comments and comments without the trigger never start a job, so they can't take
+    # the one waiting slot a human's comment needs (contains() is case-insensitive).
+    # The word here must match the action's `mention` input (default @kane-cli).
+    if: github.event.comment.user.type != 'Bot' && contains(github.event.comment.body, '@kane-cli')
+    concurrency:
+      group: kane-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: false
+    runs-on: [self-hosted, kane-demo]
+    timeout-minutes: 60
+    steps:
+      # The default branch, by name: this workflow, the action and the policy files named in
+      # .github/kane-cli.yml (read from the default branch through the API). Without the ref,
+      # pull_request_review_comment checks out the PR's merge ref, i.e. the PR's own action and policy.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      # The PR head, for impact and runs: its committed .testmuai/tests/*_test.md and its app.
+      # fetch-depth 0 brings the base commit, so each test splits into impacted / new in this PR.
+      - name: Check out the PR head
+        if: github.event.issue.pull_request || github.event.pull_request
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
+          path: pr
+          fetch-depth: 0
+          persist-credentials: false
+      - name: kane-cli
+        id: kane
+        uses: ./.github/actions/kane-cli-github
+        with:
+          phase: run
+          username: ${{ secrets.LT_USERNAME }}
+          access-key: ${{ secrets.LT_ACCESS_KEY }}
+          converse-url: ${{ vars.KANE_CONVERSE_URL }}
+          kane-cli: ${{ vars.KANE_CLI_CMD || 'kane-cli' }}
+          kane-env: ${{ vars.KANE_ENV || 'prod' }}
+          pr-path: pr
+      # The pack goes up before the result is posted, so the result can link to it.
+      - name: Upload the evidence pack
+        id: evidence
+        if: always() && steps.kane.outputs.evidence-path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kane-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.kane.outputs.evidence-path }}
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Upload kane-cli's run log
+        if: always() && steps.kane.outputs.logs-path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kane-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.kane.outputs.logs-path }}
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: kane-cli report
+        if: always()
+        uses: ./.github/actions/kane-cli-github
+        with:
+          phase: report
+          username: ${{ secrets.LT_USERNAME }}
+          access-key: ${{ secrets.LT_ACCESS_KEY }}
+          converse-url: ${{ vars.KANE_CONVERSE_URL }}
+          artifact-id: ${{ steps.evidence.outputs.artifact-id }}

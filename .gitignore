@@ -1,0 +1,10 @@
+node_modules/
+.next/
+issue-*.md
+.context/
+.hyperexecute/
+hyperexecute-cli.log
+.updatedhyperexecute.yaml
+.testmuai/evidence/
+tsconfig.tsbuildinfo
+dev.log
