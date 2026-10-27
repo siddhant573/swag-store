@@ -24,8 +24,10 @@ Follow these steps in order. Don't skip a step and don't reorder them.
    Don't paraphrase or add to it. `issue-<N>.md` is gitignored and is never committed.
 2. **Context.** Put the issue into the assurance store, keeping its id as the source:
    `kane-cli context ingest issue-<N>.md --as issue-<N> --mode agent`
-   If extraction pauses with questions (exit 3), it isn't a failure. Show the user each question with its options and
-   your pick: where the issue and `prd.md` disagree, pick the option that follows `prd.md` (the recommended one); then answer.
+   If extraction pauses with questions (exit 3), it isn't a failure. Show the user each question **with all its options and
+   kane's recommended one**, say in one line where the issue and `prd.md` disagree, then **stop and wait for the user's answer**.
+   Never answer a paused question yourself. Answer with exactly the option the user picked
+   (`kane-cli context extract --resume <sid> --mode agent --answer q1=<n>`).
    When extraction finishes, save its session so the use-cases reach the project (design refuses an unsaved use-case):
    `kane-cli context sessions save <session-id> --yes --mode agent`
 3. **Checkpoint: use-cases.** Show the user the proposed use-cases (titles, descriptions and cited lines) and **stop**.
