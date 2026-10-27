@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Resets the demo repo between takes: closes every open PR whose branch starts with feat/
+# Resets the demo repo between takes: closes every open PR whose branch starts with feat/ or fix/ or fix/
 # (except the --keep numbers) and deletes those branches. Tests designed in a take stay in the
 # linked project (linked folders can't archive them); later PRs leave them out (no file in the repo).
 # usage: ./reset-take.sh <owner/repo> [--keep N] [--keep M]
@@ -23,7 +23,7 @@ prs=$(gh pr list -R "$repo" --state open --limit 200 --json number,headRefName)
 closed=0
 while IFS=$'\t' read -r number branch; do
   [ -n "$number" ] || continue
-  case "$branch" in feat/*) ;; *) continue ;; esac
+  case "$branch" in feat/*|fix/*) ;; *) continue ;; esac
   if kept "$number"; then echo "kept #$number ($branch)"; continue; fi
   gh pr close "$number" -R "$repo" --delete-branch >/dev/null
   echo "closed #$number ($branch) and deleted its branch"
