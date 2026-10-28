@@ -1,11 +1,11 @@
 # kane-cli on pull requests: the conversation, then impact → run → evidence → policy → checks.
-# Runs on the owner's Mac (self-hosted, label kane-demo). The runner's own HOME is a runner-only
-# dir (its .env), not the owner's. Within a job the action gives kane-cli HOME=$RUNNER_TEMP/kane-home
-# (its saved login; removed by an always-step) and the PR's app a separate HOME=$RUNNER_TEMP/app-home
-# with no tokens, keys or runner files in its env. The PR's code still runs as the runner user:
-# see the README's trust model. Fork-PR workflows must stay disabled for this repo.
-# Repo variables: KANE_CLI_CMD (the installed kane-cli on the runner), KANE_ENV (prod | stage), and
-# optionally KANE_CONVERSE_URL / KANE_IMPACT_BASE_URL (empty = the kane controller for KANE_ENV). Secrets: LT_USERNAME, LT_ACCESS_KEY.
+# Runs on a GitHub-hosted runner: the action installs @testmuai/kane-cli from npm and Chrome.
+# Within a job the action gives kane-cli HOME=$RUNNER_TEMP/kane-home (its saved login; removed by an
+# always-step) and the PR's app a separate HOME=$RUNNER_TEMP/app-home with no tokens or keys in its env.
+# Fork-PR workflows must stay disabled for this repo (see the README's trust model).
+# Repo variables: KANE_ENV (prod | stage), and optionally KANE_CLI_CMD (a kane-cli command instead of
+# the npm install), KANE_CONVERSE_URL / KANE_IMPACT_BASE_URL (empty = the kane controller for KANE_ENV).
+# Secrets: LT_USERNAME, LT_ACCESS_KEY.
 name: kane-cli
 on:
   issue_comment:
@@ -26,7 +26,7 @@ jobs:
     concurrency:
       group: kane-${{ github.event.issue.number || github.event.pull_request.number }}
       cancel-in-progress: false
-    runs-on: [self-hosted, kane-demo]
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       # The default branch, by name: this workflow, the action and the policy files named in
@@ -54,12 +54,10 @@ jobs:
           username: ${{ secrets.LT_USERNAME }}
           access-key: ${{ secrets.LT_ACCESS_KEY }}
           converse-url: ${{ vars.KANE_CONVERSE_URL }}
-          kane-cli: ${{ vars.KANE_CLI_CMD || 'kane-cli' }}
+          kane-cli: ${{ vars.KANE_CLI_CMD }}
           kane-env: ${{ vars.KANE_ENV || 'prod' }}
           impact-base-url: ${{ vars.KANE_IMPACT_BASE_URL }}
           pr-path: pr
-          # The runner Mac has Chrome; kane-cli finds it.
-          install-chrome: "false"
       # The pack goes up before the result is posted, so the result can link to it.
       - name: Upload the evidence pack
         id: evidence
@@ -86,4 +84,6 @@ jobs:
           username: ${{ secrets.LT_USERNAME }}
           access-key: ${{ secrets.LT_ACCESS_KEY }}
           converse-url: ${{ vars.KANE_CONVERSE_URL }}
+          kane-cli: ${{ vars.KANE_CLI_CMD }}
+          kane-env: ${{ vars.KANE_ENV || 'prod' }}
           artifact-id: ${{ steps.evidence.outputs.artifact-id }}
