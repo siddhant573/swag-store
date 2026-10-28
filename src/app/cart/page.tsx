@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
 import { ProductArt } from "@/components/ProductArt";
-import { FREE_SHIPPING_FROM, subtotal } from "@/cart/pricing";
+import { FREE_SHIPPING_FROM, merchandiseSubtotal, subtotal } from "@/cart/pricing";
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
 export default function CartPage() {
-  const { ready, items, setQty, remove } = useCart();
+  const { ready, items, giftWrap, setGiftWrap, setQty, remove } = useCart();
   if (!ready) return <p className="muted">Loading your cart…</p>;
   if (items.length === 0)
     return (
@@ -17,8 +17,9 @@ export default function CartPage() {
         <Link href="/shop" className="btn primary">Start shopping</Link>
       </div>
     );
-  const sub = subtotal(items);
-  const toFree = Math.max(0, FREE_SHIPPING_FROM - sub);
+  const merchandise = merchandiseSubtotal(items);
+  const sub = subtotal(items, giftWrap);
+  const toFree = Math.max(0, FREE_SHIPPING_FROM - merchandise);
   return (
     <>
       <h1>Your cart</h1>
@@ -44,6 +45,10 @@ export default function CartPage() {
           </div>
           <div className="row total-row"><span>Subtotal</span><span data-testid="cart-subtotal">{money(sub)}</span></div>
           <p className="muted small">Promo codes and shipping are applied at checkout.</p>
+          <label className="check" style={{ margin: "12px 0" }}>
+            <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} data-testid="gift-wrap" />
+            Gift wrap (+$5)
+          </label>
           <Link href="/checkout" className="btn primary wide" data-testid="go-checkout">Checkout</Link>
           <Link href="/shop" className="btn ghost wide" style={{ marginTop: 8 }}>Continue shopping</Link>
         </aside>

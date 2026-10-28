@@ -7,7 +7,7 @@ import { currentUser } from "@/server/session";
 
 export async function POST(req: Request) {
   if (!(await currentUser())) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
-  const body = (await req.json()) as { items?: { id: string; qty: number }[]; promo?: string; shipTo?: Partial<Address> };
+  const body = (await req.json()) as { items?: { id: string; qty: number }[]; promo?: string; giftWrap?: boolean; shipTo?: Partial<Address> };
 
   // Re-price from the catalog: never trust prices sent by the browser.
   const items: CartItem[] = [];
@@ -28,9 +28,10 @@ export async function POST(req: Request) {
     placedAt: new Date().toISOString(),
     items,
     promo,
+    giftWrap: body.giftWrap === true,
     shipTo: { id: "ship", name: s.name, street: s.street, city: s.city, state: s.state, zip: s.zip },
     status: "Processing",
-    charged: total(items, promo),
+    charged: total(items, promo, body.giftWrap === true),
   };
   const res = NextResponse.json({ id: order.id });
   res.cookies.set(ORDERS_COOKIE, encodeOrders([order, ...orders]), cookieOpts);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { readOrders } from "@/server/orders";
 import { orderSummary } from "@/server/orderSummary";
+import { GIFT_WRAP_FEE } from "@/cart/pricing";
 import { formatAddress } from "@/data/address";
 import { ProductArt } from "@/components/ProductArt";
 import { OrderTimeline } from "@/components/OrderTimeline";
@@ -51,6 +52,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
       </section>
       <aside className="card summary">
         <h2>Summary</h2>
+        {order.giftWrap ? <div className="row"><span>Gift wrap</span><span data-testid="confirmation-gift-wrap">{money(GIFT_WRAP_FEE)}</span></div> : null}
         <div className="row"><span>Subtotal</span><span data-testid="confirmation-subtotal">{money(s.subtotal)}</span></div>
         <div className="row"><span>Discount{order.promo ? ` (${order.promo})` : ""}</span><span data-testid="confirmation-discount">−{money(s.discount)}</span></div>
         <div className="row"><span>Shipping</span><span data-testid="confirmation-shipping">{money(s.shipping)}</span></div>
