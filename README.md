@@ -49,7 +49,9 @@ On a pull request, comment to ask kane-cli about the change:
 - `@kane-cli run them`, `@kane-cli rerun the failed one`, `@kane-cli why did <test> fail?`
 - `@kane-cli help` lists everything it can do.
 
-The workflow is `.github/workflows/kane.yml`, and the action is `.github/actions/kane-cli-github/`.
+The workflow is `.github/workflows/kane.yml`; it runs the public action
+[`LambdaTest/kane-cli/integrations/github-action/kane-cli-pr`](https://github.com/LambdaTest/kane-cli/tree/main/integrations/github-action/kane-cli-pr)
+on a GitHub-hosted runner.
 `.github/kane-cli.yml` sets who may ask and run, how the PR's app is served (`npm run start:kane` on
 127.0.0.1:4046), and the policy every run is judged against (`.github/kane/checkout-policy.yaml`: every checkout
 test must pass and assert something; a healed test is a warning). PR checks run with heal off, so a check
