@@ -1,0 +1,19 @@
+{
+  "commit_id": "65436308-215f-4e27-9962-450387955235",
+  "test_id": "6227d9be-fdb0-4af9-b838-7830323c15ae",
+  "testcase_id": "01M60FT11CJHP35YYGJE4N8B8H",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "checksum-invalid-card-shows-card-number-error",
+  "tc_id": "TC-2027",
+  "executions": [
+    {
+      "execution_id": "4daae87b-6215-41eb-8652-299f984a927e",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "uploaded": true,
+      "at": "2026-10-28T05:36:13.711Z"
+    }
+  ]
+}

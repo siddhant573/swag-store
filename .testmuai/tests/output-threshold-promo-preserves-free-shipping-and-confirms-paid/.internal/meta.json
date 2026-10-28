@@ -1,0 +1,24 @@
+{
+  "test_id": "d241bee4-0cd8-4c86-a750-50dc1e7c2bd5",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "threshold-promo-preserves-free-shipping-and-confirms-paid",
+  "commit_id": "a4525812-353d-4141-ad4e-d381efd9892e",
+  "testcase_id": "01M60FT11CJHP35YYGGHX9QXCH",
+  "tc_id": "TC-2021",
+  "executions": [
+    {
+      "execution_id": "c6362609-0bd6-4230-8cc8-8d101202c5ed",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:51:31.203Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.051Z"
+    }
+  ]
+}

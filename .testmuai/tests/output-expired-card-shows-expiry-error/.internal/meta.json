@@ -1,0 +1,24 @@
+{
+  "test_id": "9045b0d5-103e-42f7-b7b8-e5821ed8b002",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "expired-card-shows-expiry-error",
+  "commit_id": "cc5c30a6-d0ca-4d1f-b7f3-de8ae850d28c",
+  "testcase_id": "01M60FT11CJHP35YYGJNBQ28YN",
+  "tc_id": "TC-2028",
+  "executions": [
+    {
+      "execution_id": "423b6e71-2bc9-419e-b002-6873c67daa16",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:43:00.257Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.039Z"
+    }
+  ]
+}

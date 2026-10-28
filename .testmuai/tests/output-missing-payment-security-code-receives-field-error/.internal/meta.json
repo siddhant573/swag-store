@@ -1,0 +1,24 @@
+{
+  "test_id": "c3d03754-541a-4176-8c95-12e7c63767e9",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "missing-payment-security-code-receives-field-error",
+  "commit_id": "0f0a5df6-9446-45a5-a238-2df7bc227d82",
+  "testcase_id": "01M60FT11CJHP35YYGJYANSJ6W",
+  "tc_id": "TC-2029",
+  "executions": [
+    {
+      "execution_id": "bb4913b8-063e-4cff-a5c4-5e76331376dc",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:45:14.682Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.043Z"
+    }
+  ]
+}

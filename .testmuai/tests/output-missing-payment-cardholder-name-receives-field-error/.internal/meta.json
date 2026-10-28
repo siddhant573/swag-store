@@ -1,0 +1,24 @@
+{
+  "test_id": "79ec98aa-51ad-4976-a95a-f0804c6f0d62",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "missing-payment-cardholder-name-receives-field-error",
+  "commit_id": "b7869b28-592f-4cb7-bf78-d7f8137c0a57",
+  "testcase_id": "01M60FT11CJHP35YYGK83KTA1T",
+  "tc_id": "TC-2030",
+  "executions": [
+    {
+      "execution_id": "818d79f9-a244-48cf-9b5b-a5fde6e20013",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:44:05.712Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.041Z"
+    }
+  ]
+}

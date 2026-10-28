@@ -78,5 +78,30 @@
     "value": "",
     "secret": true,
     "description": "kane-cli couldn't tell if this is a secret, so it's marked as one; set \"secret\": false if it isn't"
+  },
+  "unknown_promo_code": {
+    "value": "NOTACODE",
+    "secret": false,
+    "description": "An unknown promotional code not recognized by the Universe Swag Store, distinct from UNIVERSE20."
+  },
+  "checksum_invalid_card": {
+    "value": "4242 4242 4242 4241",
+    "secret": false,
+    "description": "Card number whose checksum fails, distinct from the specified declined test card."
+  },
+  "expired_expiry": {
+    "value": "01/20",
+    "secret": false,
+    "description": "MM/YY card expiration strictly before the time the test runs."
+  },
+  "testmu_user": {
+    "value": "octo-demo",
+    "secret": true,
+    "description": "the store's demo account (prd.md)"
+  },
+  "testmu_pass": {
+    "value": "universe-2026",
+    "secret": true,
+    "description": "the store's demo account (prd.md)"
   }
 }

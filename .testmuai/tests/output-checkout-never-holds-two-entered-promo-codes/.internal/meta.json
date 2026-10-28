@@ -1,0 +1,25 @@
+{
+  "commit_id": "2f46f311-b3e1-4b9b-b04d-31ec4357460b",
+  "test_id": "083fe7b8-cc85-409d-89f0-6121c9131140",
+  "testcase_id": "01M60FT11DHJFEG1X1Z5BXP98W",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "checkout-never-holds-two-entered-promo-codes",
+  "tc_id": "TC-2033",
+  "executions": [
+    {
+      "execution_id": "babbce8d-aab5-4c74-899e-1f306dd5f0b0",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "uploaded": false,
+      "at": "2026-10-28T05:38:47.221Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "replay",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.035Z"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "test_id": "2154736a-a762-43d2-8cd5-d6ac2805a5c7",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "new-unsaved-address-is-usable-for-accepted-purchase",
+  "commit_id": "1e993625-2551-4cbc-8f16-253bf77562de",
+  "testcase_id": "01M60FT11CJHP35YYGHW1P13R7",
+  "tc_id": "TC-2025",
+  "executions": [
+    {
+      "execution_id": "dfcddb86-0df7-426f-8038-26452c2793d4",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:47:19.154Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.046Z"
+    }
+  ]
+}

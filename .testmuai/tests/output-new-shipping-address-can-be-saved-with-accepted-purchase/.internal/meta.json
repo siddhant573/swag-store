@@ -1,0 +1,24 @@
+{
+  "test_id": "48eb87cb-70d7-45b5-b116-f23d82b30531",
+  "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
+  "org_id": "1067878",
+  "session_name": "new-shipping-address-can-be-saved-with-accepted-purchase",
+  "commit_id": "d5116f93-92b1-41dd-b52e-cf1c2f930aa6",
+  "testcase_id": "01M60FT11CJHP35YYGHH900GNF",
+  "tc_id": "TC-2024",
+  "executions": [
+    {
+      "execution_id": "5553723b-c829-4ad1-8377-81ad6c8effdb",
+      "run_kind": "author",
+      "status": "passed",
+      "valid": true,
+      "at": "2026-10-28T05:47:39.005Z"
+    },
+    {
+      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "run_kind": "author",
+      "status": "passed",
+      "at": "2026-10-28T05:52:57.045Z"
+    }
+  ]
+}
