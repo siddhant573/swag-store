@@ -4,9 +4,8 @@
 # (its saved login; removed by an always-step) and the PR's app a separate HOME=$RUNNER_TEMP/app-home
 # with no tokens, keys or runner files in its env. The PR's code still runs as the runner user:
 # see the README's trust model. Fork-PR workflows must stay disabled for this repo.
-# Repo variables: KANE_CONVERSE_URL, KANE_CLI_CMD (the kane-cli source build's command, e.g.
-# "/…/pr-runner/kane-cli/node_modules/.bin/tsx /…/pr-runner/kane-cli/src/index.tsx"), and
-# optionally KANE_ENV (prod | stage). Secrets: LT_USERNAME, LT_ACCESS_KEY.
+# Repo variables: KANE_CLI_CMD (the installed kane-cli on the runner), KANE_ENV (prod | stage), and
+# optionally KANE_CONVERSE_URL / KANE_IMPACT_BASE_URL (empty = the kane controller for KANE_ENV). Secrets: LT_USERNAME, LT_ACCESS_KEY.
 name: kane-cli
 on:
   issue_comment:
@@ -49,7 +48,7 @@ jobs:
           persist-credentials: false
       - name: kane-cli
         id: kane
-        uses: ./.github/actions/kane-cli-github
+        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # main, PR #220
         with:
           phase: run
           username: ${{ secrets.LT_USERNAME }}
@@ -59,6 +58,8 @@ jobs:
           kane-env: ${{ vars.KANE_ENV || 'prod' }}
           impact-base-url: ${{ vars.KANE_IMPACT_BASE_URL }}
           pr-path: pr
+          # The runner Mac has Chrome; kane-cli finds it.
+          install-chrome: "false"
       # The pack goes up before the result is posted, so the result can link to it.
       - name: Upload the evidence pack
         id: evidence
@@ -79,7 +80,7 @@ jobs:
           retention-days: 30
       - name: kane-cli report
         if: always()
-        uses: ./.github/actions/kane-cli-github
+        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # main, PR #220
         with:
           phase: report
           username: ${{ secrets.LT_USERNAME }}
