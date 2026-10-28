@@ -1,24 +1,33 @@
 {
-  "test_id": "925cae9e-4772-43f1-b61c-bd6bfcb6ad24",
+  "test_id": "a0aa8e7d-e015-4d16-88f8-4d626cdc70ae",
   "project_id": "01M60FBF36SWCZR92SJR0RZWF0",
   "org_id": "1067878",
   "session_name": "below-threshold-promo-discounts-merchandise-but-not-shipping",
-  "commit_id": "69f1274a-0dd2-4467-af19-a80e8dff146b",
+  "commit_id": "eea2b758-726c-473e-8698-e2fbc78e0e9a",
   "testcase_id": "01M60FT11CJHP35YYGGYAP814H",
   "tc_id": "TC-2022",
   "executions": [
     {
-      "execution_id": "a84aef6e-0995-42ef-9c2c-3904ee39ea9d",
+      "execution_id": "dc94f530-cd5c-4e61-bb2c-9a58ef7b1a7c",
       "run_kind": "author",
       "status": "passed",
       "valid": true,
-      "at": "2026-10-28T05:41:40.968Z"
+      "at": "2026-10-28T06:07:55.916Z"
     },
     {
-      "execution_id": "ad714c00-00a6-4d9c-9646-a84c36edf580",
+      "execution_id": "8c47e106-630c-4184-ac11-4366e649f0ef",
       "run_kind": "author",
       "status": "passed",
-      "at": "2026-10-28T05:52:57.029Z"
+      "at": "2026-10-28T06:08:37.606Z",
+      "uploaded": true
+    },
+    {
+      "execution_id": "ef5b6e60-f0c0-412f-964f-6797978c05dd",
+      "run_kind": "replay",
+      "status": "passed",
+      "valid": true,
+      "uploaded": true,
+      "at": "2026-10-28T06:09:31.746Z"
     }
   ]
 }
