@@ -39,7 +39,7 @@ A second test, `t-4`, also failed on the first run. kane-cli's own triage put it
 
 ## Use it in your repo
 
-[**Follow the setup guide**](docs/use-in-your-repo.md). It takes you from installing kane-cli to your first `@kane-cli` comment on your own pull request. You'll need a LambdaTest account with credits.
+[**Follow the setup guide**](docs/use-in-your-repo.md). It takes you from installing kane-cli to your first `@kane-cli` comment on your own pull request. You'll need a TestMu AI (formerly LambdaTest) account with credits.
 
 ## Run the shop locally
 
