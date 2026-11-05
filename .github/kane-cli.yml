@@ -19,8 +19,7 @@ impact:
   judge: true
 # The PR's own build, served from the PR checkout while its tests run; tests get --override-start-url.
 app:
-  # 4046, not 3000 (4045 is a browser-blocked port; another service on the runner Mac takes 3000, and
-  # the booth's dev server uses 3100). The PR's Next.js app is installed and built first, so allow 180 s.
+  # The PR's Next.js app is installed and built first, so give it time to come up.
   start: npm ci --no-audit --no-fund && npm run build && npm run start:kane
   url: http://127.0.0.1:4046
   ready_path: /
