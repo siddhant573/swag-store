@@ -4,7 +4,7 @@ By the end of this guide, a comment on any pull request in your repo runs the te
 
 You need:
 
-- A LambdaTest (TestMu AI) account with credits. Designing tests and recording them spends credits, and so do PR checks.
+- A TestMu AI (formerly LambdaTest) account with credits. Designing tests and recording them spends credits, and so do PR checks.
 - A web app you can build and start on a GitHub-hosted runner.
 - Node 20 or newer.
 
@@ -81,7 +81,7 @@ Copy these three files from this repo to the same paths on your default branch:
 | [`.github/kane-cli.yml`](../.github/kane-cli.yml) | `app.start` and `app.url`: how your app builds and serves on the runner. `access`: who may ask and run |
 | [`.github/kane/checkout-policy.yaml`](../.github/kane/checkout-policy.yaml) | The gates a run must pass |
 
-Then add your credentials as repository secrets. Your username and access key are in the LambdaTest dashboard under Settings > Keys.
+Then add your credentials as repository secrets. Your username and access key are in the TestMu AI dashboard under Settings > Keys.
 
 ```bash
 gh secret set LT_USERNAME
