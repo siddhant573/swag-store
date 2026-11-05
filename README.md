@@ -1,6 +1,6 @@
 # kane-cli catches a checkout bug on a pull request
 
-![A refactor charges $5 shipping on a free-shipping order. kane-cli catches it on the pull request, and the fix passes.](docs/media/kane-catches-a-pr-bug.gif)
+https://github.com/user-attachments/assets/024c20e6-fcf3-4cae-9035-dcc65b6f9074
 
 This is a small web shop with one job: to show [kane-cli](https://www.npmjs.com/package/@testmuai/kane-cli) working from requirements to a pull request. A PM's requirement becomes an SDET's test, and that test catches a developer's bug before it merges.
 
