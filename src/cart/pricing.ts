@@ -27,8 +27,8 @@ export function shipping(sub: number): number {
 
 export type Breakdown = { subtotal: number; discount: number; shipping: number; total: number };
 
-// One pipeline for the whole order: each step works on the running amount,
-// so checkout, the confirmation and the order API can never disagree.
+// One pipeline for the whole order. Free-shipping eligibility is based on the
+// merchandise subtotal, while the discount is applied only to merchandise.
 export function breakdown(items: CartItem[], code?: string): Breakdown {
   let running = subtotal(items);
   const sub = running;
@@ -36,7 +36,7 @@ export function breakdown(items: CartItem[], code?: string): Breakdown {
   const off = discount(running, code);
   running -= off;
 
-  const ship = shipping(running);
+  const ship = shipping(sub);
   running += ship;
 
   return { subtotal: sub, discount: off, shipping: ship, total: cents(running) };
