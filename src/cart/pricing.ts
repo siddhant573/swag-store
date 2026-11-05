@@ -25,7 +25,23 @@ export function shipping(sub: number): number {
   return sub >= FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE;
 }
 
+export type Breakdown = { subtotal: number; discount: number; shipping: number; total: number };
+
+// One pipeline for the whole order: each step works on the running amount,
+// so checkout, the confirmation and the order API can never disagree.
+export function breakdown(items: CartItem[], code?: string): Breakdown {
+  let running = subtotal(items);
+  const sub = running;
+
+  const off = discount(running, code);
+  running -= off;
+
+  const ship = shipping(running);
+  running += ship;
+
+  return { subtotal: sub, discount: off, shipping: ship, total: cents(running) };
+}
+
 export function total(items: CartItem[], code?: string): number {
-  const sub = subtotal(items);
-  return cents(sub - discount(sub, code) + shipping(sub));
+  return breakdown(items, code).total;
 }

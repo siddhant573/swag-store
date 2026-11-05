@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
-import { discount, isValidPromo, shipping, subtotal, total } from "@/cart/pricing";
+import { breakdown, isValidPromo } from "@/cart/pricing";
 import type { UiVersion } from "@/ui/version";
 import { AddressForm } from "@/components/AddressForm";
 import { useAddresses } from "@/components/useAddresses";
@@ -39,10 +39,7 @@ export function CheckoutClient({ ui }: { ui: UiVersion }) {
       </div>
     );
 
-  const sub = subtotal(items);
-  const off = discount(sub, applied);
-  const ship = shipping(sub);
-  const tot = total(items, applied);
+  const { subtotal: sub, discount: off, shipping: ship, total: tot } = breakdown(items, applied);
 
   const applyPromo = () => {
     const c = code.trim().toUpperCase();
