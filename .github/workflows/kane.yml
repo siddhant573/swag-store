@@ -2,9 +2,7 @@
 # Runs on a GitHub-hosted runner: the action installs @testmuai/kane-cli from npm and Chrome.
 # Within a job the action gives kane-cli HOME=$RUNNER_TEMP/kane-home (its saved login; removed by an
 # always-step) and the PR's app a separate HOME=$RUNNER_TEMP/app-home with no tokens or keys in its env.
-# Fork-PR workflows must stay disabled for this repo (see the README's trust model).
-# Repo variables: KANE_ENV (prod | stage), and optionally KANE_CLI_CMD (a kane-cli command instead of
-# the npm install), KANE_CONVERSE_URL / KANE_IMPACT_BASE_URL (empty = the kane controller for KANE_ENV).
+# Keep workflows for fork PRs disabled: a check builds and serves the PR's own code.
 # Secrets: LT_USERNAME, LT_ACCESS_KEY.
 name: kane-cli
 on:
@@ -48,7 +46,7 @@ jobs:
           persist-credentials: false
       - name: kane-cli
         id: kane
-        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # main, PR #220
+        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # pinned commit
         with:
           phase: run
           username: ${{ secrets.LT_USERNAME }}
@@ -78,7 +76,7 @@ jobs:
           retention-days: 30
       - name: kane-cli report
         if: always()
-        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # main, PR #220
+        uses: LambdaTest/kane-cli/integrations/github-action/kane-cli-pr@9650625778dca1d3f3362cabd2c824f6e3ac6697 # pinned commit
         with:
           phase: report
           username: ${{ secrets.LT_USERNAME }}

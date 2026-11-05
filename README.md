@@ -1,68 +1,68 @@
-# Universe Swag Store
+# kane-cli catches a checkout bug on a pull request
 
-A small web shop for GitHub Universe merchandise: Octocat tees, Mona hoodies, sticker packs, mugs and more.
-Shoppers browse and search the catalog, pick sizes, keep a wishlist, check out with a shipping address and a
-test-mode card, and track, cancel, return or re-order past orders.
+![A refactor charges $5 shipping on a free-shipping order. kane-cli catches it on the pull request, and the fix passes.](docs/media/kane-catches-a-pr-bug.gif)
 
-`prd.md` is the product's requirements document. Every test in `.testmuai/tests/` was designed from it.
+This is a small web shop with one job: to show [kane-cli](https://www.npmjs.com/package/@testmuai/kane-cli) working from requirements to a pull request. A PM's requirement becomes an SDET's test, and that test catches a developer's bug before it merges.
 
-## Run it
+**See it happen: [pull request #7](https://github.com/siddhant573/swag-store/pull/7).** The bug is there on purpose. The run, the screenshots and the replies are real.
 
-Node 20 or newer.
+## What happened on that PR
+
+1. A refactor moved the order total into one function. It looked harmless, but it checked the free-shipping threshold after the discount instead of before it.
+2. The reviewer commented `@kane-cli does this break checkout?`.
+3. kane-cli traced the diff to the 5 tests it affects and ran them against the PR's build in a real browser. It replied 3 min 41 s later.
+4. It found that a `$50` order with a `$10` promo now charged `$5` shipping instead of free shipping, and the `kane-cli / policy` check failed.
+5. The one-line fix went in, and `@kane-cli the fix is pushed, check again` came back with 5 of 5 passing.
+
+A second test, `t-4`, also failed on the first run. kane-cli's own triage put it down to the test's recording and not to the app, and it passed on the re-check. You can read both in the evidence pack linked from the PR.
+
+## Start from your role
+
+| You are | Start here | What to look for |
+|---|---|---|
+| **A developer** | [PR #7](https://github.com/siddhant573/swag-store/pull/7) | You ask in a comment and never name a test. The reply gives the cause, not just a red check |
+| **A PM** | [`prd.md`](prd.md), section 3 | "The free-shipping threshold is checked against the merchandise subtotal before any discount." That sentence is why this bug got caught |
+| **An SDET** | [`.testmuai/tests/`](.testmuai/tests) | 10 checkout tests in plain English, with each step tagged to the criteria it verifies. Then read the [quality gates](.github/kane/checkout-policy.yaml) a run must pass |
+
+## From requirement to merged PR
+
+| Step | Who | What you see here |
+|---|---|---|
+| Requirements become shared context | PM | [`prd.md`](prd.md), ingested into one Test Manager project |
+| Tests are designed from those requirements | SDET | [`.testmuai/tests/`](.testmuai/tests), such as [the $50 free-shipping test](.testmuai/tests/threshold-promo-preserves-free-shipping-and-confirms-paid_test.md) |
+| A PR runs only the tests it affects | Developer | [The workflow](.github/workflows/kane.yml) and [PR #7](https://github.com/siddhant573/swag-store/pull/7) |
+| Every run leaves evidence and a verdict | SDET, developer | Screenshots, network and console for each step, judged against [the policy](.github/kane/checkout-policy.yaml) |
+| The fix gets checked the same way | Developer | [The second reply on PR #7](https://github.com/siddhant573/swag-store/pull/7) |
+| Coverage shows the gaps | PM, SDET | The passing run confirmed 16 of 32 criteria. Only 1 of the 17 use cases has tests designed so far, and `kane-cli cover` says so |
+
+**No requirements written down?** Point `kane-cli explore` at your running app. It maps your screens, flows and findings, and the design step turns that map into tests in the same project.
+
+## Use it in your repo
+
+[**Follow the setup guide**](docs/use-in-your-repo.md). It takes you from installing kane-cli to your first `@kane-cli` comment on your own pull request. You'll need a LambdaTest account with credits.
+
+## Run the shop locally
+
+You need Node 20 or newer.
 
 ```bash
 npm ci
-npm run dev          # http://localhost:3100, live reload
-npm run build && npm start          # production build on :3100
-npm run build && npm run start:kane # production build on http://127.0.0.1:4046 (what the tests use)
-npm run start:kane:v2               # the same build with the v2 checkout ("Complete purchase", promo field moved)
+npm run dev   # http://localhost:3100
 ```
 
-Sign in with `octo-demo` / `universe-2026`. It's a fictional account with two delivered orders in its
-history. Payments are in test mode: `4242 4242 4242 4242` is accepted, and `4000 0000 0000 0002` is always
-declined. No card is ever charged.
+Sign in with `octo-demo` / `universe-2026`, a fictional account. Payments are in test mode: `4242 4242 4242 4242` is accepted and `4000 0000 0000 0002` is always declined. Nothing is ever charged.
+
+The shop was built as the demo for a talk at GitHub Universe 2026, which is where its name and products come from. It's fictional and isn't affiliated with GitHub.
 
 ## Where things live
 
 | Path | What it does |
 |---|---|
-| `src/cart/pricing.ts` | Subtotal, promo discount, shipping and total. The cart, checkout and the order API import it. |
-| `src/server/orderSummary.ts` | The order confirmation's price breakdown, recomputed from the saved order. |
-| `src/app/` | The pages (Next.js App Router) and the API routes (`/api/login`, `/api/orders`, …). |
-| `src/data/` | The catalog, reviews, card and address rules. |
-| `src/ui/version.ts` | `UI_VERSION=v2` renames "Place order" and moves the promo field. It never touches pricing. |
+| `prd.md` | The product's requirements |
+| `.testmuai/tests/` | The designed tests and their recordings |
+| `.github/kane-cli.yml` | Who may ask and run, how the PR's app starts, and which policy applies |
+| `.github/kane/checkout-policy.yaml` | The quality gates |
+| `.github/workflows/kane.yml` | The workflow, using the [`kane-cli-pr` action](https://github.com/LambdaTest/kane-cli/tree/main/integrations/github-action/kane-cli-pr) |
+| `src/cart/pricing.ts` | Subtotal, discount, shipping and total |
 
-## Tests: kane-cli guards every pull request
-
-The end-to-end tests are designed by [kane-cli](https://www.npmjs.com/package/@testmuai/kane-cli) from
-`prd.md` and live in `.testmuai/tests/*_test.md`, next to their recordings (`output-*/`). Run them all against
-a local build:
-
-```bash
-kane-cli testrun run .testmuai/tests/*_test.md --headless --parallel 1
-```
-
-On a pull request, comment to ask kane-cli about the change:
-
-- `@kane-cli does this break checkout?` finds the tests whose requirements the change touches, runs them
-  against the PR's build and replies with the results, the evidence pack and the checkout policy's verdict.
-- `@kane-cli run them`, `@kane-cli rerun the failed one`, `@kane-cli why did <test> fail?`
-- `@kane-cli help` lists everything it can do.
-
-The workflow is `.github/workflows/kane.yml`; it runs the public action
-[`LambdaTest/kane-cli/integrations/github-action/kane-cli-pr`](https://github.com/LambdaTest/kane-cli/tree/main/integrations/github-action/kane-cli-pr)
-on a GitHub-hosted runner.
-`.github/kane-cli.yml` sets who may ask and run, how the PR's app is served (`npm run start:kane` on
-127.0.0.1:4046), and the policy every run is judged against (`.github/kane/checkout-policy.yaml`: every checkout
-test must pass and assert something; a healed test is a warning). PR checks run with heal off, so a check
-reports what it saw.
-
-Between demo takes, `./reset-take.sh <owner/repo> [--keep N]` closes the open `feat/*` pull requests and
-deletes their branches. Tests designed in a take stay in the linked project (a linked folder can't archive them); a later
-PR's impact may still match them, but with no file in the repo they never run, count or show as rows: the
-"Why these tests" section ends with one muted line saying how many were left out.
-
-## Agents
-
-- `.github/agents/kaymas.agent.md`: the coding agent's instructions for this repo.
-- `.github/skills/kane-cli/`: the kane-cli skill, so an agent can design and run tests with it.
+Released under the [MIT License](LICENSE).
