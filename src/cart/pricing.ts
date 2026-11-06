@@ -25,7 +25,23 @@ export function shipping(sub: number): number {
   return sub >= FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE;
 }
 
+export type Breakdown = { subtotal: number; discount: number; shipping: number; total: number };
+
+// One pipeline for the whole order. Free-shipping eligibility is based on the
+// merchandise subtotal, while the discount is applied only to merchandise.
+export function breakdown(items: CartItem[], code?: string): Breakdown {
+  let running = subtotal(items);
+  const sub = running;
+
+  const off = discount(running, code);
+  running -= off;
+
+  const ship = shipping(sub);
+  running += ship;
+
+  return { subtotal: sub, discount: off, shipping: ship, total: cents(running) };
+}
+
 export function total(items: CartItem[], code?: string): number {
-  const sub = subtotal(items);
-  return cents(sub - discount(sub, code) + shipping(sub));
+  return breakdown(items, code).total;
 }
